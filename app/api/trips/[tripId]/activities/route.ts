@@ -57,29 +57,84 @@ export async function POST(
     return NextResponse.json({ error: "Activity name is required." }, { status: 400 });
   }
 
-  if (!dayId || !/^\d{4}-\d{2}-\d{2}$/.test(dayDate)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dayDate)) {
     return NextResponse.json(
-      { error: "Choose a valid trip day before adding the activity." },
+      { error: "Choose a valid date for the activity." },
       { status: 400 },
     );
   }
 
-  const { data: day, error: dayError } = await supabase
-    .from("itinerary_days")
-    .select("id,date")
-    .eq("id", dayId)
-    .eq("trip_id", tripId)
-    .maybeSingle();
+  let day: { id: string; date: string } | null = null;
 
-  if (dayError) {
-    return NextResponse.json({ error: dayError.message }, { status: 400 });
+  if (dayId) {
+    const lookup = await supabase
+      .from("itinerary_days")
+      .select("id,date")
+      .eq("id", dayId)
+      .eq("trip_id", tripId)
+      .maybeSingle();
+
+    if (lookup.error) {
+      return NextResponse.json({ error: lookup.error.message }, { status: 400 });
+    }
+
+    day = lookup.data;
+  }
+
+  // If there is no selected itinerary day, find/create one from the date.
+  // This makes Add Activity work even on older trips where Stage 2 days
+  // were never generated.
+  if (!day) {
+    const existing = await supabase
+      .from("itinerary_days")
+      .select("id,date")
+      .eq("trip_id", tripId)
+      .eq("date", dayDate)
+      .maybeSingle();
+
+    if (existing.error) {
+      return NextResponse.json({ error: existing.error.message }, { status: 400 });
+    }
+
+    day = existing.data;
   }
 
   if (!day) {
-    return NextResponse.json(
-      { error: "That itinerary day could not be found for this trip." },
-      { status: 404 },
-    );
+    const { data: trip } = await supabase
+      .from("trips")
+      .select("start_date")
+      .eq("id", tripId)
+      .maybeSingle();
+
+    let dayNumber = 1;
+    if (trip?.start_date) {
+      const start = new Date(`${trip.start_date}T00:00:00Z`);
+      const current = new Date(`${dayDate}T00:00:00Z`);
+      dayNumber = Math.max(
+        1,
+        Math.floor((current.getTime() - start.getTime()) / 86400000) + 1,
+      );
+    }
+
+    const created = await supabase
+      .from("itinerary_days")
+      .insert({
+        trip_id: tripId,
+        date: dayDate,
+        day_number: dayNumber,
+        title: `Day ${dayNumber}`,
+      })
+      .select("id,date")
+      .single();
+
+    if (created.error || !created.data) {
+      return NextResponse.json(
+        { error: created.error?.message || "Could not create the itinerary day." },
+        { status: 400 },
+      );
+    }
+
+    day = created.data;
   }
 
   const { count } = await supabase

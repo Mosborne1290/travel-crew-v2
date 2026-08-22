@@ -12,6 +12,111 @@ function outputText(payload: any) {
   return parts.join("\n");
 }
 
+function smartPlannerFallback(
+  question: string,
+  trip: any,
+  days: any[],
+  activities: any[],
+  places: any[],
+  weather: any,
+) {
+  const suggestions: any[] = [];
+  const q = question.toLowerCase();
+
+  const activityDates = new Set(
+    activities
+      .map((a) => a.start_datetime?.slice(0, 10))
+      .filter(Boolean),
+  );
+
+  const availableDays = (days || []).filter((d) => !activityDates.has(d.date));
+
+  const saved = (places || []).slice(0, 4);
+  for (const place of saved) {
+    suggestions.push({
+      title: place.name,
+      description:
+        place.notes ||
+        `A saved ${place.category || "place"} that could fit into a free part of your itinerary.`,
+      date: availableDays[0]?.date || days?.[0]?.date || null,
+      time: null,
+      activity_type:
+        place.category === "restaurant"
+          ? "restaurant"
+          : place.category === "tour"
+            ? "tour"
+            : "attraction",
+      venue_name: place.name,
+      address: place.address || null,
+      action: "itinerary",
+    });
+  }
+
+  if (suggestions.length < 4) {
+    const destination = trip.primary_destination || "your destination";
+    const templates = [
+      {
+        title: `Easy local exploring in ${destination}`,
+        description:
+          "Keep a flexible two-to-three hour block for a walk, waterfront, neighbourhood or central sightseeing close to your existing plans.",
+        activity_type: "attraction",
+      },
+      {
+        title: "Relaxed meal break",
+        description:
+          "Leave a comfortable meal window near your other activities rather than over-scheduling the day.",
+        activity_type: "restaurant",
+      },
+      {
+        title: "Flexible free time",
+        description:
+          "Keep one unstructured block for shopping, resting, weather changes or something you discover during the trip.",
+        activity_type: "free_time",
+      },
+    ];
+
+    for (const item of templates) {
+      if (suggestions.length >= 5) break;
+      suggestions.push({
+        ...item,
+        date: availableDays[suggestions.length]?.date || days?.[0]?.date || null,
+        time: null,
+        venue_name: null,
+        address: null,
+        action: "itinerary",
+      });
+    }
+  }
+
+  let weatherNote = "";
+  if (weather?.daily?.time?.length) {
+    const rainy = weather.daily.time
+      .map((date: string, i: number) => ({
+        date,
+        rain: weather.daily.precipitation_probability_max?.[i] ?? 0,
+      }))
+      .filter((d: any) => d.rain >= 60);
+
+    if (rainy.length) {
+      weatherNote =
+        ` I can see a higher rain chance on ${rainy
+          .slice(0, 3)
+          .map((d: any) => `${d.date} (${Math.round(d.rain)}%)`)
+          .join(", ")}, so keep those days more flexible or favour indoor options.`;
+    }
+  }
+
+  const modeNote =
+    "OpenAI API credit is not currently available, so Travel Crew used its free Smart Planner mode instead.";
+
+  return {
+    answer:
+      `${modeNote} Based on the trip information already saved, these are practical options that fit without changing anything automatically.${weatherNote}`,
+    suggestions: suggestions.slice(0, 6),
+    planner_mode: "free_smart",
+  };
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
@@ -21,12 +126,7 @@ export async function POST(request: Request) {
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "AI is optional. Add OPENAI_API_KEY in Vercel to activate Ask Travel Crew." },
-      { status: 503 },
-    );
-  }
+  const hasOpenAI = Boolean(apiKey);
 
   const body = await request.json();
   const tripId = String(body.tripId || "");
@@ -96,6 +196,19 @@ Return ONLY valid JSON in this exact shape:
 Use no more than 6 suggestions. If the question is informational, suggestions may be empty.
 `;
 
+  if (!hasOpenAI) {
+    return NextResponse.json(
+      smartPlannerFallback(
+        question,
+        trip,
+        days ?? [],
+        activities ?? [],
+        places ?? [],
+        weather,
+      ),
+    );
+  }
+
   async function callOpenAI(model: string) {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -146,14 +259,29 @@ Use no more than 6 suggestions. If the question is informational, suggestions ma
       response.status === 429 ? 429 :
       502;
 
+    if (
+      response.status === 429 ||
+      String(apiMessage).toLowerCase().includes("quota") ||
+      String(apiMessage).toLowerCase().includes("billing")
+    ) {
+      return NextResponse.json(
+        smartPlannerFallback(
+          question,
+          trip,
+          days ?? [],
+          activities ?? [],
+          places ?? [],
+          weather,
+        ),
+      );
+    }
+
     return NextResponse.json(
       {
         error:
           response.status === 401
             ? "The OpenAI API key in Vercel is invalid or belongs to the wrong project."
-            : response.status === 429
-              ? `OpenAI API limit/billing issue: ${apiMessage}`
-              : apiMessage,
+            : apiMessage,
       },
       { status },
     );

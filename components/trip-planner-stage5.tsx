@@ -51,6 +51,7 @@ export function TripPlannerStage5({
   const [forecast,setForecast]=useState<ForecastDay[]>([]);
   const [message,setMessage]=useState("");
   const [busy,setBusy]=useState(false);
+  const [activityDate,setActivityDate]=useState(initialDays[0]?.date ?? tripStart ?? "");
 
   const selectedDay=days.find(d=>d.id===selectedDayId) ?? days[0] ?? null;
   const dayActivities=(dayId:string)=>activities.filter(a=>a.itinerary_day_id===dayId).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0)||String(a.start_datetime||"").localeCompare(String(b.start_datetime||"")));
@@ -76,8 +77,13 @@ export function TripPlannerStage5({
       supabase.from("itinerary_days").select("id,date,day_number,title,notes").eq("trip_id",tripId).order("date"),
       supabase.from("activities").select("id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude").eq("trip_id",tripId).order("sort_order"),
     ]);
-    setDays((d??[]) as Day[]);
+    const nextDays=(d??[]) as Day[];
+    setDays(nextDays);
     setActivities((a??[]) as Activity[]);
+    if (activityDate) {
+      const match=nextDays.find(day=>day.date===activityDate);
+      if (match) setSelectedDayId(match.id);
+    }
   }
 
   async function generateDays(){
@@ -107,8 +113,8 @@ export function TripPlannerStage5({
   async function addActivity(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
 
-    if (!selectedDay) {
-      setMessage("Choose or generate a trip day before adding an activity.");
+    if (!activityDate) {
+      setMessage("Choose a date for the activity.");
       return;
     }
 
@@ -122,8 +128,8 @@ export function TripPlannerStage5({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          itinerary_day_id: selectedDay.id,
-          day_date: selectedDay.date,
+          itinerary_day_id: selectedDay?.id || "",
+          day_date: activityDate,
           destination_name: destination?.name || "",
           title: String(f.get("title") || "").trim(),
           activity_type: String(f.get("activity_type") || "other"),
@@ -293,7 +299,7 @@ export function TripPlannerStage5({
         {!days.length?<button className="primary full-width" type="button" onClick={generateDays} disabled={busy}>Generate Trip Days</button>:null}
         <div className="day-stack">{days.map(d=>{
           const w=weatherFor(d.date);
-          return <button key={d.id} className={`day-card ${selectedDay?.id===d.id?"active":""}`} onClick={()=>setSelectedDayId(d.id)}>
+          return <button key={d.id} className={`day-card ${selectedDay?.id===d.id?"active":""}`} onClick={()=>{setSelectedDayId(d.id);setActivityDate(d.date)}}>
             <strong>Day {d.day_number}</strong><small>{formatDay(d.date)}</small>
             {w?<small>{weatherEmoji(w.code)} {Math.round(w.max)}° / {Math.round(w.min)}° · {Math.round(w.rain)}% rain</small>:null}
           </button>
@@ -309,6 +315,7 @@ export function TripPlannerStage5({
           <h3>Add Activity</h3>
           <div className="form-grid">
             <div className="field span-2"><label>Activity *</label><input name="title" required /></div>
+            <div className="field"><label>Date *</label><input type="date" value={activityDate} onChange={e=>setActivityDate(e.target.value)} required /></div>
             <div className="field"><label>Type</label><select name="activity_type"><option value="attraction">Attraction</option><option value="restaurant">Restaurant</option><option value="tour">Tour</option><option value="transport">Transport</option><option value="shopping">Shopping</option><option value="free_time">Free Time</option><option value="flight">Flight</option><option value="hotel">Hotel</option><option value="cruise">Cruise</option><option value="other">Other</option></select></div>
             <div className="field"><label>Venue</label><input name="venue_name" /></div>
             <div className="field"><label>Start</label><input name="start_time" type="time" /></div>
@@ -317,7 +324,7 @@ export function TripPlannerStage5({
             <div className="field"><label>Cost AUD</label><input name="cost" type="number" min="0" step="0.01" /></div>
             <div className="field span-2"><label>Notes</label><textarea name="notes"/></div>
           </div>
-          <button className="primary" disabled={busy||!selectedDay}>Add to itinerary</button>
+          <button className="primary" type="submit" disabled={busy||!activityDate}>{busy?"Adding…":"Add to itinerary"}</button>
         </form>
       </section>
     </div>:null}

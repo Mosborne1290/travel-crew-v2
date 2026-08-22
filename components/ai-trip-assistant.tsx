@@ -16,6 +16,7 @@ export function AiTripAssistant({tripId,userId}:{tripId:string;userId:string}) {
   const [suggestions,setSuggestions]=useState<Suggestion[]>([]);
   const [message,setMessage]=useState("");
   const [busy,setBusy]=useState(false);
+  const [plannerMode,setPlannerMode]=useState("");
 
   async function ask(event:FormEvent){
     event.preventDefault();if(!question.trim())return;
@@ -23,7 +24,7 @@ export function AiTripAssistant({tripId,userId}:{tripId:string;userId:string}) {
     try{
       const r=await fetch("/api/ai/trip-assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tripId,question})});
       const p=await r.json();if(!r.ok)throw new Error(p.error||"AI request failed.");
-      setAnswer(p.answer||"");setSuggestions(p.suggestions||[]);
+      setAnswer(p.answer||"");setSuggestions(p.suggestions||[]);setPlannerMode(p.planner_mode||"openai");
     }catch(e){setMessage(e instanceof Error?e.message:"AI request failed.");}
     finally{setBusy(false);}
   }
@@ -72,7 +73,7 @@ export function AiTripAssistant({tripId,userId}:{tripId:string;userId:string}) {
       <form className="ai-form" onSubmit={ask}><textarea value={question} onChange={e=>setQuestion(e.target.value)} placeholder="Ask something about this trip…" rows={4}/><button className="primary" disabled={busy}>{busy?"Thinking…":"Ask Travel Crew"}</button></form>
       {message?<div className={message.includes("added")||message.includes("saved")||message.includes("shared")?"success":"error"}>{message}</div>:null}
     </section>
-    {answer?<section className="panel ai-answer"><h3>Travel Crew suggests</h3><p>{answer}</p></section>:null}
+    {answer?<section className="panel ai-answer"><div className="section-title-row"><h3>Travel Crew suggests</h3>{plannerMode==="free_smart"?<span className="badge">Free Smart Planner</span>:<span className="badge">AI</span>}</div><p>{answer}</p></section>:null}
     {suggestions.length?<section className="ai-suggestion-grid">{suggestions.map((s,i)=><article className="ai-suggestion" key={`${s.title}-${i}`}>
       <div className="eyebrow">{s.date||"Idea"}{s.time?` · ${s.time}`:""}</div><h3>{s.title}</h3><p>{s.description}</p>{s.venue_name?<div className="muted">📍 {s.venue_name}</div>:null}
       <div className="inline-actions">
