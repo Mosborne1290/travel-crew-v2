@@ -106,54 +106,114 @@ export function TripPlannerStage5({
 
   async function addActivity(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
-    if (!selectedDay) return;
-    const formEl=event.currentTarget; const f=new FormData(formEl);
-    setBusy(true); setMessage("");
-    try{
-      const title=String(f.get("title")||"").trim();
-      const venue=String(f.get("venue_name")||"").trim();
-      const address=String(f.get("address")||"").trim();
-      const loc=await geocode(address||venue||`${title} ${destination?.name||""}`);
-      const start=String(f.get("start_time")||""); const end=String(f.get("end_time")||"");
-      const current=dayActivities(selectedDay.id);
-      const {error}=await supabase.from("activities").insert({
-        trip_id:tripId,itinerary_day_id:selectedDay.id,created_by:userId,title,
-        activity_type:String(f.get("activity_type")||"other"),
-        start_datetime:start?new Date(`${selectedDay.date}T${start}:00`).toISOString():null,
-        end_datetime:end?new Date(`${selectedDay.date}T${end}:00`).toISOString():null,
-        venue_name:venue||null,address:address||null,
-        notes:String(f.get("notes")||"").trim()||null,
-        cost:f.get("cost")?Number(f.get("cost")):null,currency:"AUD",status:"planned",
-        sort_order:current.length,
-        latitude:loc?.latitude??null,longitude:loc?.longitude??null,
+
+    if (!selectedDay) {
+      setMessage("Choose or generate a trip day before adding an activity.");
+      return;
+    }
+
+    const formEl = event.currentTarget;
+    const f = new FormData(formEl);
+    setBusy(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/trips/${tripId}/activities`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itinerary_day_id: selectedDay.id,
+          day_date: selectedDay.date,
+          destination_name: destination?.name || "",
+          title: String(f.get("title") || "").trim(),
+          activity_type: String(f.get("activity_type") || "other"),
+          venue_name: String(f.get("venue_name") || "").trim(),
+          address: String(f.get("address") || "").trim(),
+          start_time: String(f.get("start_time") || ""),
+          end_time: String(f.get("end_time") || ""),
+          cost: String(f.get("cost") || ""),
+          notes: String(f.get("notes") || "").trim(),
+        }),
       });
-      if(error) throw error;
-      formEl.reset(); await refresh(); setMessage("Activity added.");
-    }catch(e){setMessage(e instanceof Error?e.message:"Could not add activity.");}
-    finally{setBusy(false);}
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          payload.error ||
+          payload.details ||
+          "Could not save the activity."
+        );
+      }
+
+      formEl.reset();
+      await refresh();
+      setMessage("Activity added.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not add activity."
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function saveEdit(event:FormEvent<HTMLFormElement>){
-    event.preventDefault(); if(!editing) return;
-    const f=new FormData(event.currentTarget); setBusy(true); setMessage("");
-    try{
-      const targetDay=days.find(d=>d.id===String(f.get("day_id"))) ?? selectedDay!;
-      const start=String(f.get("start_time")||""); const end=String(f.get("end_time")||"");
-      const venue=String(f.get("venue_name")||"").trim(); const address=String(f.get("address")||"").trim();
-      const loc=await geocode(address||venue||`${String(f.get("title")||"")} ${destination?.name||""}`);
-      const {error}=await supabase.from("activities").update({
-        itinerary_day_id:targetDay.id,title:String(f.get("title")||"").trim(),
-        activity_type:String(f.get("activity_type")||"other"),
-        start_datetime:start?new Date(`${targetDay.date}T${start}:00`).toISOString():null,
-        end_datetime:end?new Date(`${targetDay.date}T${end}:00`).toISOString():null,
-        venue_name:venue||null,address:address||null,notes:String(f.get("notes")||"").trim()||null,
-        cost:f.get("cost")?Number(f.get("cost")):null,
-        latitude:loc?.latitude??editing.latitude,longitude:loc?.longitude??editing.longitude,
-      }).eq("id",editing.id);
-      if(error) throw error;
-      setEditing(null); await refresh(); setMessage("Activity updated.");
-    }catch(e){setMessage(e instanceof Error?e.message:"Could not update activity.");}
-    finally{setBusy(false);}
+    event.preventDefault();
+    if (!editing) return;
+
+    const f = new FormData(event.currentTarget);
+    const targetDay = days.find(
+      d => d.id === String(f.get("day_id"))
+    ) ?? selectedDay;
+
+    if (!targetDay) {
+      setMessage("Choose a valid itinerary day.");
+      return;
+    }
+
+    setBusy(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/trips/${tripId}/activities`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          activity_id: editing.id,
+          itinerary_day_id: targetDay.id,
+          destination_name: destination?.name || "",
+          title: String(f.get("title") || "").trim(),
+          activity_type: String(f.get("activity_type") || "other"),
+          venue_name: String(f.get("venue_name") || "").trim(),
+          address: String(f.get("address") || "").trim(),
+          start_time: String(f.get("start_time") || ""),
+          end_time: String(f.get("end_time") || ""),
+          cost: String(f.get("cost") || ""),
+          notes: String(f.get("notes") || "").trim(),
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Could not update activity.");
+      }
+
+      setEditing(null);
+      await refresh();
+      setMessage("Activity updated.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not update activity."
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function remove(id:string){
