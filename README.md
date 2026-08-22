@@ -616,3 +616,282 @@ For a small private friends-and-family app these are used conservatively and req
 13. Export Trip -> test Full Book and Simple Itinerary -> Save as PDF.
 14. Install Travel Crew to a phone home screen.
 15. If OPENAI_API_KEY is configured, test Ask Travel Crew.
+
+
+---
+
+# Stage 6 - Daily Trip Companion & Group Travel
+
+Stage 6 builds on the working Stage 5 + live chat notifications release.
+
+## IMPORTANT - run the Stage 6 migration first
+
+Run:
+
+`supabase/stage6-migration.sql`
+
+in Supabase -> SQL Editor.
+
+It adds:
+- checklists + checklist items
+- packing lists
+- trip reminders
+- group polls + voting
+- journal entries
+- message reactions
+- reply metadata for chat messages
+- photo timeline/favourite fields
+- document traveller/date metadata
+- private trip important-information record
+- trip status sync helper
+- realtime publication entries for the Stage 6 collaborative tables
+
+It does not delete existing Stage 1-5 trip data.
+
+## Stage 6 Features
+
+### Today - Daily Trip Companion
+Trip -> Today combines:
+- current trip day
+- next activity countdown
+- activities in time order
+- bookings starting today
+- reminders due today
+- outstanding checklist items
+- shortcuts to Weather, Map, Money and Chat
+
+### Checklists
+Trip -> Checklists:
+- multiple reusable checklists
+- categories
+- assigned traveller
+- due date
+- notes
+- completed status
+
+### Packing
+The same Trip Prep screen includes:
+- individual traveller items
+- shared group items
+- quantity
+- packed status
+- categories
+- starter packing list suggestion
+
+### Reminders
+- reminder date/time
+- traveller
+- message
+- Today shortcut
+- browser notification while Travel Crew is open/backgrounded and browser notification permission is enabled
+
+The app does not require a paid push-notification provider.
+
+### Group Polls
+Trip -> Polls:
+- create a question
+- multiple choices
+- one live vote per traveller
+- realtime-compatible poll tables
+- close a poll
+- save winning option to Saved Places
+
+### Richer Trip Chat
+Chat now supports:
+- live messages
+- typing indicator
+- reply to message
+- emoji reactions
+- @name text mentions
+- existing new-chat popup notifications
+- delete your own message
+
+### Photo Timeline
+Photos now support:
+- trip day association
+- day-by-day groups
+- favourites
+- all/favourites view
+- captions
+- private Supabase storage
+
+### Travel Journal
+Trip -> Journal:
+- daily notes
+- day title
+- highlight
+- favourite moment
+- journal timeline
+- printable Memory Book
+
+### Memory Book
+Journal -> Memory Book:
+- trip cover
+- journal days
+- highlights
+- favourite moments
+- photos/favourites
+- browser Print / Save as PDF
+
+### Important Information
+Trip -> Important Info:
+- emergency contact
+- travel insurer
+- policy number
+- insurer phone
+- local emergency number
+- embassy / consulate notes
+- airline contacts
+- cruise contacts
+- hotel contacts
+- private trip-member notes
+
+This information is protected by trip membership RLS.
+
+### Trip Status Workflow
+Travel Crew can sync trips into:
+- planning
+- ready
+- travelling
+- completed
+
+Dashboard and trip overview trigger status synchronisation.
+
+### Home Dashboard
+The Stage 6 dashboard adds:
+- Today activity count
+- outstanding tasks
+- unread alerts
+- budget remaining
+- Daily Companion shortcut
+- Trip Prep shortcut
+
+### Browser Alerts
+The top toolbar can show:
+`Enable Browser Alerts`
+
+When enabled, due reminders can display browser notifications while the
+Travel Crew web app/PWA is open or running in a background tab.
+
+This free implementation does NOT claim to provide guaranteed remote web-push
+delivery when the browser/PWA has been completely terminated.
+
+### Offline Travel Mode
+Trip Overview -> `Download Trip for Offline Use`
+
+Downloads an offline snapshot containing:
+- trip information
+- itinerary
+- booking summaries
+- destinations
+- reminders
+- document metadata
+
+The dedicated offline trip screen is cached locally.
+
+For privacy and storage reasons, Stage 6 does not automatically download the
+binary contents of passports, insurance files or other private documents into
+the service-worker cache.
+
+## Stage 6 Trip Menu
+
+- Overview
+- Today
+- Plan
+- Bookings
+- Travellers
+- Explore
+- Saved Places
+- Map
+- Weather
+- Chat
+- Polls
+- Photos
+- Journal
+- Checklists
+- Documents
+- Important Info
+- Budget
+- Money
+
+The trip header still includes:
+- Ask Travel Crew
+- Export Trip
+
+## Installation
+
+1. Run `supabase/stage6-migration.sql` in Supabase SQL Editor.
+2. Upload the complete Stage 6 project over the existing GitHub repository.
+3. Commit to `main`.
+4. Allow Vercel to redeploy.
+5. Hard-refresh the browser once after deployment.
+6. On mobile/PWA, reopen Travel Crew so the updated service worker loads.
+
+No new Vercel API keys are required for Stage 6.
+
+## Recommended Stage 6 Tests
+
+### Today
+1. Open a trip that has an activity today.
+2. Open Today.
+3. Confirm activities/bookings/tasks display.
+
+### Checklists
+1. Create a checklist.
+2. Add a task.
+3. assign it to a traveller.
+4. Tick it complete.
+
+### Packing
+1. Select Suggest Starter List.
+2. Add a custom item.
+3. Mark it packed.
+
+### Reminder
+1. Enable Browser Alerts.
+2. Create a reminder a few minutes ahead.
+3. Keep Travel Crew open/backgrounded.
+4. Confirm browser alert appears.
+
+### Poll
+1. Create a poll with 2-3 choices.
+2. Vote from two Travel Crew member accounts.
+3. Close the poll.
+4. Save the winning option.
+
+### Chat
+1. Open the same trip in two member accounts.
+2. Confirm typing indicator.
+3. Reply to a message.
+4. Add an emoji reaction.
+5. Share an item to Chat and confirm the other user's popup notification.
+
+### Photos
+1. Upload a photo.
+2. assign it to a trip day.
+3. mark it favourite.
+4. switch to Favourites view.
+
+### Journal / Memory Book
+1. Save a journal entry.
+2. Add a highlight and favourite moment.
+3. Open Memory Book.
+4. Print / Save as PDF.
+
+### Offline
+1. Open Trip Overview while online.
+2. click Download Trip for Offline Use.
+3. open `/offline-trip/<trip id>` once.
+4. disconnect the network.
+5. reopen the cached offline trip page.
+
+## Stage 6 Notes
+
+True remote web push while the app is fully closed requires VAPID push
+subscriptions and a server-side push-delivery mechanism. Stage 6 deliberately
+keeps the app free and self-contained, using realtime/in-app popups plus
+browser notifications while the PWA is active/backgrounded.
+
+The next logical rollout is Stage 7: stronger offline sync, true opt-in web
+push, location-aware "near me" tools, automatic itinerary conflict detection,
+and a polished group trip activity feed.

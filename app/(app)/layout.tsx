@@ -11,7 +11,7 @@ export default async function ProtectedLayout({
   const role = await getCurrentRole(user.id);
   const supabase = await createClient();
 
-  const [{ data: profile }, { data: notifications }] = await Promise.all([
+  const [{ data: profile }, { data: notifications }, { data: reminders }] = await Promise.all([
     supabase
       .from("profiles")
       .select("display_name, first_name")
@@ -23,6 +23,14 @@ export default async function ProtectedLayout({
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20),
+    supabase
+      .from("trip_reminders")
+      .select("id,title,message,remind_at,target_url")
+      .eq("user_id", user.id)
+      .eq("completed", false)
+      .gte("remind_at", new Date(Date.now() - 3600000).toISOString())
+      .lte("remind_at", new Date(Date.now() + 7 * 86400000).toISOString())
+      .order("remind_at"),
   ]);
 
   const displayName =
@@ -37,6 +45,7 @@ export default async function ProtectedLayout({
       role={role}
       userId={user.id}
       notifications={notifications ?? []}
+      reminders={reminders ?? []}
     >
       {children}
     </AppShell>

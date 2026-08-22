@@ -15,9 +15,10 @@ export function TripWorkspaceHeader({
 }: {
   trip: Trip;
   active:
-    | "overview" | "plan" | "bookings" | "travellers" | "places"
-    | "chat" | "photos" | "documents" | "weather" | "map" | "money"
-    | "budget" | "assistant" | "explore";
+    | "overview" | "today" | "plan" | "bookings" | "travellers"
+    | "explore" | "places" | "map" | "weather" | "chat"
+    | "polls" | "photos" | "journal" | "checklists"
+    | "documents" | "important" | "budget" | "money" | "assistant";
 }) {
   return (
     <>

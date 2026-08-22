@@ -2,6 +2,9 @@ import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 import { NotificationBell } from "@/components/notification-bell";
 import { MobileNav } from "@/components/mobile-nav";
+import { ReminderWatcher, NotificationPermissionButton } from "@/components/reminder-watcher";
+
+type Reminder = { id:string; title:string; message:string|null; remind_at:string; target_url:string|null };
 
 type Notification = {
   id: string;
@@ -19,15 +22,17 @@ export function AppShell({
   role,
   userId,
   notifications,
+  reminders,
 }: {
   children: React.ReactNode;
   displayName: string;
   role: string;
   userId: string;
   notifications: Notification[];
+  reminders: Reminder[];
 }) {
   return (
-    <div className="app-layout">
+    <div className="app-layout"><ReminderWatcher reminders={reminders} />
       <aside className="sidebar">
         <Link href="/dashboard" className="brand-lockup">
           <div className="brand-mark">✈</div>
@@ -71,6 +76,7 @@ export function AppShell({
 
       <main className="content-shell">
         <div className="app-top-tools">
+          <NotificationPermissionButton />
           <NotificationBell userId={userId} initialNotifications={notifications} />
         </div>
         {children}

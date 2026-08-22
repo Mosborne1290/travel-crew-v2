@@ -27,7 +27,7 @@ self.addEventListener("fetch", (event) => {
   // Protected Travel Crew pages and APIs always remain network-backed.
   // Only static app-shell assets are cached.
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(() => caches.match("/offline")));
+    event.respondWith(caches.match(request).then((cached) => cached || fetch(request).catch(() => caches.match("/offline"))));
     return;
   }
 

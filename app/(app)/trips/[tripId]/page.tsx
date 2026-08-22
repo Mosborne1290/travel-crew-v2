@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
+import { OfflineTripButton } from "@/components/offline-trip-button";
 
 function niceDate(value: string | null) {
   if (!value) return "TBC";
@@ -22,6 +23,7 @@ export default async function TripDetailPage({
 }) {
   const { tripId } = await params;
   const supabase = await createClient();
+  await supabase.rpc("sync_trip_status", { p_trip_id: tripId });
 
   const [
     { data: tripData, error },
@@ -49,6 +51,7 @@ export default async function TripDetailPage({
   return (
     <>
       <TripWorkspaceHeader trip={trip} active="overview" />
+      <OfflineTripButton tripId={tripId} />
 
       <section
         className="hero-card detail-hero"

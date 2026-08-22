@@ -14,13 +14,14 @@ export default async function TripPhotosPage({
   const user = await requireUser();
   const supabase = await createClient();
 
-  const [{ data: tripData }, { data: photos }] = await Promise.all([
+  const [{ data: tripData }, { data: photos }, { data: days }] = await Promise.all([
     supabase.from("trips").select("*").eq("id", tripId).maybeSingle(),
     supabase
       .from("photos")
-      .select("id,storage_path,thumbnail_path,caption,taken_at,uploaded_at,uploaded_by")
+      .select("id,storage_path,caption,taken_at,uploaded_at,uploaded_by,itinerary_day_id,is_favourite")
       .eq("trip_id", tripId)
       .order("uploaded_at", { ascending: false }),
+    supabase.from("itinerary_days").select("id,date,day_number").eq("trip_id", tripId).order("date"),
   ]);
 
   if (!tripData) notFound();
@@ -43,6 +44,7 @@ export default async function TripPhotosPage({
         userId={user.id}
         initialPhotos={photos ?? []}
         signedUrls={signedUrls}
+        days={days ?? []}
       />
     </>
   );

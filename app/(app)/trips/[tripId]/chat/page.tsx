@@ -74,7 +74,7 @@ export default async function TripChatPage({
   const [{ data: messages }, { data: memberRows }] = await Promise.all([
     supabase
       .from("messages")
-      .select("id,room_id,user_id,message_text,message_type,created_at,edited_at,deleted_at")
+      .select("id,room_id,user_id,message_text,message_type,created_at,edited_at,deleted_at,reply_to_message_id,pinned_at")
       .eq("room_id", room.id)
       .order("created_at", { ascending: true })
       .limit(500),
@@ -83,6 +83,11 @@ export default async function TripChatPage({
       .select("user_id")
       .eq("trip_id", tripId),
   ]);
+
+  const messageIds = (messages ?? []).map((m) => m.id);
+  const { data: reactions } = messageIds.length
+    ? await supabase.from("message_reactions").select("id,message_id,user_id,emoji").in("message_id", messageIds)
+    : { data: [] as any[] };
 
   const userIds = Array.from(new Set([
     ...(memberRows ?? []).map((m) => m.user_id),
@@ -119,6 +124,7 @@ export default async function TripChatPage({
         roomId={room.id}
         initialMessages={messages ?? []}
         members={members}
+        initialReactions={reactions ?? []}
       />
     </>
   );
