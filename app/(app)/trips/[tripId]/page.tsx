@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
+import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
 
 function niceDate(value: string | null) {
   if (!value) return "TBC";
@@ -22,38 +23,32 @@ export default async function TripDetailPage({
   const { tripId } = await params;
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("trips")
-    .select("*")
-    .eq("id", tripId)
-    .maybeSingle();
-
-  if (error || !data) notFound();
-
-  const trip = data as Trip;
-
-  const [{ data: destinations }, { data: members }] = await Promise.all([
+  const [
+    { data: tripData, error },
+    { data: destinations },
+    { data: members },
+    { count: activityCount },
+    { count: bookingCount },
+    { count: placeCount },
+  ] = await Promise.all([
+    supabase.from("trips").select("*").eq("id", tripId).maybeSingle(),
     supabase
       .from("destinations")
       .select("id,name,city,country,arrival_date,departure_date")
       .eq("trip_id", tripId)
       .order("sort_order"),
-    supabase
-      .from("trip_members")
-      .select("id,role,user_id")
-      .eq("trip_id", tripId),
+    supabase.from("trip_members").select("id,role,user_id").eq("trip_id", tripId),
+    supabase.from("activities").select("*", { count: "exact", head: true }).eq("trip_id", tripId),
+    supabase.from("bookings").select("*", { count: "exact", head: true }).eq("trip_id", tripId),
+    supabase.from("saved_places").select("*", { count: "exact", head: true }).eq("trip_id", tripId),
   ]);
+
+  if (error || !tripData) notFound();
+  const trip = tripData as Trip;
 
   return (
     <>
-      <header className="page-header">
-        <div>
-          <Link className="muted" href="/trips">← My Trips</Link>
-        </div>
-        <div className="header-actions">
-          <span className="badge">{trip.status}</span>
-        </div>
-      </header>
+      <TripWorkspaceHeader trip={trip} active="overview" />
 
       <section
         className="hero-card detail-hero"
@@ -75,20 +70,37 @@ export default async function TripDetailPage({
         </div>
       </section>
 
-      <section className="quick-grid">
-        <div className="quick-card"><div className="quick-icon">🗓</div><strong>Plan</strong><small>Itinerary coming next</small></div>
-        <div className="quick-card"><div className="quick-icon">🎟</div><strong>Bookings</strong><small>Flights, hotels & cruises</small></div>
-        <div className="quick-card"><div className="quick-icon">💬</div><strong>Chat</strong><small>Realtime crew chat</small></div>
-        <div className="quick-card"><div className="quick-icon">📸</div><strong>Photos</strong><small>Trip albums & uploads</small></div>
+      <section className="stats-grid">
+        <Link className="stat-card" href={`/trips/${tripId}/plan`}>
+          <div className="stat-icon">🗓️</div>
+          <div><strong>{activityCount ?? 0}</strong><span>planned activities</span></div>
+        </Link>
+        <Link className="stat-card" href={`/trips/${tripId}/bookings`}>
+          <div className="stat-icon">🎟️</div>
+          <div><strong>{bookingCount ?? 0}</strong><span>bookings</span></div>
+        </Link>
+        <Link className="stat-card" href={`/trips/${tripId}/travellers`}>
+          <div className="stat-icon">👥</div>
+          <div><strong>{members?.length ?? 0}</strong><span>travellers</span></div>
+        </Link>
+        <Link className="stat-card" href={`/trips/${tripId}/places`}>
+          <div className="stat-icon">📍</div>
+          <div><strong>{placeCount ?? 0}</strong><span>saved places</span></div>
+        </Link>
       </section>
 
       <section className="two-col">
         <div className="panel">
-          <h2>Trip overview</h2>
+          <div className="section-title-row">
+            <div>
+              <h2>Trip overview</h2>
+              <div className="muted">Everything Stage 2 has connected to this trip.</div>
+            </div>
+          </div>
           <div className="list">
             <div className="list-row"><span>Primary destination</span><strong>{trip.primary_destination || "TBC"}</strong></div>
+            <div className="list-row"><span>Trip dates</span><strong>{niceDate(trip.start_date)} – {niceDate(trip.end_date)}</strong></div>
             <div className="list-row"><span>Budget</span><strong>{trip.budget_amount ? `$${Number(trip.budget_amount).toLocaleString("en-AU")} AUD` : "Not set"}</strong></div>
-            <div className="list-row"><span>Status</span><span className="badge">{trip.status}</span></div>
           </div>
           {trip.description ? <p className="muted">{trip.description}</p> : null}
         </div>
@@ -99,7 +111,10 @@ export default async function TripDetailPage({
             <div className="list">
               {destinations.map((destination) => (
                 <div className="list-row" key={destination.id}>
-                  <strong>{destination.name}</strong>
+                  <div>
+                    <strong>{destination.name}</strong>
+                    <div className="muted">{[destination.city, destination.country].filter(Boolean).join(", ")}</div>
+                  </div>
                   <span>📍</span>
                 </div>
               ))}

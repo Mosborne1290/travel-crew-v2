@@ -168,3 +168,44 @@ Once the first production test works, add:
 10. PWA / Add to Home Screen
 11. AI Travel Assistant
 12. PDF itinerary export
+
+
+---
+
+# Stage 2 Upgrade
+
+No new SQL migration is required if you already ran the complete Travel Crew V2 Supabase installer.
+
+Stage 2 adds:
+
+- Full trip workspace navigation
+- Plan My Trip
+- Automatic itinerary-day generation from trip dates
+- Activities with time, type, venue, address, cost and notes
+- Bookings
+- Travellers and pending invitation records
+- Saved Places
+- Updated trip overview counters
+
+## Deploy Stage 2
+
+Upload the contents of this ZIP over the existing files in your GitHub `travel-crew-v2` repository.
+
+It is safe to overwrite files with the same names.
+
+Commit to `main`. Vercel should automatically build and deploy the new version.
+
+## Test after deployment
+
+1. Open an existing trip.
+2. Confirm the new tabs appear.
+3. Open **Plan My Trip** and generate trip days.
+4. Add an activity.
+5. Refresh and confirm it remains.
+6. Save a booking.
+7. Add a traveller invitation.
+8. Save a place.
+9. Log out and back in.
+10. Confirm the information is still present.
+
+Chat, Photos and Documents remain visible as Stage 3 placeholders.
