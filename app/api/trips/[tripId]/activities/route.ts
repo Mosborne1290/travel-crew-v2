@@ -141,7 +141,7 @@ export async function POST(
     .from("activities")
     .select("*", { count: "exact", head: true })
     .eq("trip_id", tripId)
-    .eq("itinerary_day_id", dayId);
+    .eq("itinerary_day_id", day.id);
 
   const mapQuery =
     address ||

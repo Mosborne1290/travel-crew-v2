@@ -506,3 +506,32 @@ button { cursor: pointer; }
   .print-section{break-inside:auto}
   @page{size:A4;margin:14mm}
 }
+
+
+/* Stage 5 Hotfix 3 */
+.travel-toast{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:300;
+  max-width:min(430px,calc(100vw - 32px));
+  background:#16233c;
+  color:white;
+  border-radius:13px;
+  padding:13px 16px;
+  box-shadow:0 14px 40px rgba(15,30,60,.28);
+  font-weight:700;
+  line-height:1.4;
+}
+.inline-actions button:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+@media(max-width:700px){
+  .travel-toast{
+    right:16px;
+    left:16px;
+    bottom:92px;
+    max-width:none;
+  }
+}
