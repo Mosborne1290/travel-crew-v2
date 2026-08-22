@@ -17,7 +17,7 @@ export function TripWorkspaceHeader({
   active,
 }: {
   trip: Trip;
-  active: "overview" | "plan" | "bookings" | "travellers" | "places" | "chat" | "photos" | "documents";
+  active: "overview" | "plan" | "bookings" | "travellers" | "places" | "chat" | "photos" | "documents" | "weather" | "map" | "money";
 }) {
   return (
     <>

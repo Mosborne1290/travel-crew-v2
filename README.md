@@ -287,3 +287,135 @@ Vercel should deploy automatically.
 
 For a true realtime chat test, sign in as a second trip member in another
 browser/device after that user has been added to `trip_members`.
+
+
+---
+
+# Stage 4 Upgrade
+
+Stage 4 adds real member onboarding and the main travel utility layer.
+
+## IMPORTANT: Run the Stage 4 SQL migration first
+
+Before deploying the Stage 4 code, run:
+
+`supabase/stage4-migration.sql`
+
+in:
+
+Supabase -> SQL Editor -> New Query -> Run
+
+This migration:
+- adds secure invite lookup
+- adds secure invite acceptance
+- converts an accepted invite into a real `trip_members` record
+- automatically adds that user to the trip chat if it exists
+- creates a welcome notification
+- enables Realtime for notifications
+
+## New Stage 4 features
+
+### Real Traveller Onboarding
+The Travellers page now creates a secure 7-day invite link.
+
+The invited person can:
+1. open the link
+2. sign in if they already have a Travel Crew account
+3. or create a Supabase account from the invite page
+4. accept the invitation
+5. automatically become a trip member
+6. automatically join the trip chat
+
+The invite can only be accepted by the email address it was created for.
+
+### Notification Centre
+A live notification bell is now available across the protected app.
+
+### Weather
+- Open-Meteo location search
+- destination coordinates saved back to Supabase
+- current weather
+- 14-day forecast
+- temperature
+- rain probability
+- wind
+- weather conditions
+
+No weather API key is required.
+
+### Travel Money
+- Frankfurter currency conversion
+- AUD and common travel currencies
+- reference exchange rate display
+
+No currency API key is required.
+
+### Interactive Trip Map
+- MapLibre
+- OpenStreetMap raster tiles
+- trip destination pins
+- saved places with coordinates
+- itinerary activities with coordinates
+- map zoom/pan controls
+
+For older trips, open the Weather tab once and choose the correct destination.
+This saves the trip coordinates so the main destination appears on the map.
+
+## Supabase Auth setting
+
+For invited travellers to create their own account from the invite link,
+Email sign-up must remain enabled in Supabase Authentication.
+
+There is still no public "Create Account" button on the normal Travel Crew login page.
+
+## No new Vercel environment variables
+
+Stage 4 uses the environment variables already configured:
+
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+- PEXELS_API_KEY
+
+Open-Meteo, Frankfurter, MapLibre and OpenStreetMap do not require an API key
+for this personal Stage 4 implementation.
+
+## Stage 4 deployment order
+
+1. Run `supabase/stage4-migration.sql` in Supabase.
+2. Upload this Stage 4 project over your GitHub repository.
+3. Commit to `main`.
+4. Let Vercel deploy automatically.
+5. Test the features below.
+
+## Stage 4 tests
+
+### Invite
+1. Open a trip -> Travellers.
+2. Add a test email.
+3. Copy the invitation link.
+4. Open it in a private/incognito browser.
+5. Create/sign into the invited account.
+6. Join Trip.
+7. Confirm the trip appears for that account.
+8. Confirm the person appears under Travellers.
+
+### Chat
+Open the trip in two browsers using two trip-member accounts.
+Messages should appear live.
+
+### Weather
+1. Open trip -> Weather.
+2. Search the destination.
+3. Choose the correct city.
+4. Confirm current weather and the 14-day forecast display.
+
+### Map
+After confirming the destination in Weather, open Map.
+The destination pin should display.
+
+### Money
+Open trip -> Money or the main Travel Money page.
+Convert AUD to another currency.
+
+### Notifications
+After an invited user joins, their notification bell should show a new trip notification.

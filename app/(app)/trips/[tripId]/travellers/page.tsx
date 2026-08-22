@@ -19,7 +19,7 @@ export default async function TravellersPage({
     supabase.from("trip_members").select("id,user_id,role").eq("trip_id", tripId).order("joined_at"),
     supabase
       .from("trip_invites")
-      .select("id,email,role,expires_at,accepted_at")
+      .select("id,email,role,invite_token,expires_at,accepted_at")
       .eq("trip_id", tripId)
       .order("created_at", { ascending: false }),
   ]);

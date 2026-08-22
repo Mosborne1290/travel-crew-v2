@@ -13,7 +13,10 @@ export function TripWorkspaceNav({
     | "places"
     | "chat"
     | "photos"
-    | "documents";
+    | "documents"
+    | "weather"
+    | "map"
+    | "money";
 }) {
   const tabs = [
     { id: "overview", label: "Overview", href: `/trips/${tripId}` },
@@ -24,6 +27,9 @@ export function TripWorkspaceNav({
     { id: "chat", label: "Chat", href: `/trips/${tripId}/chat` },
     { id: "photos", label: "Photos", href: `/trips/${tripId}/photos` },
     { id: "documents", label: "Documents", href: `/trips/${tripId}/documents` },
+    { id: "weather", label: "Weather", href: `/trips/${tripId}/weather` },
+    { id: "map", label: "Map", href: `/trips/${tripId}/map` },
+    { id: "money", label: "Money", href: `/trips/${tripId}/money` },
   ] as const;
 
   return (

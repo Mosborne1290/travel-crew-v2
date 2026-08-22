@@ -304,3 +304,73 @@ button { cursor: pointer; }
 @media(max-width:900px){.photo-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.chat-message{max-width:90%}}
 @media(max-width:700px){.photo-gallery{grid-template-columns:1fr 1fr}.chat-composer{grid-template-columns:1fr}.document-card{grid-template-columns:42px minmax(0,1fr)}.document-card .icon-danger{grid-column:2;justify-self:end}}
 @media(max-width:480px){.photo-gallery{grid-template-columns:1fr}.message-stream{min-height:360px}.chat-message{max-width:95%}}
+
+
+/* =========================
+   TRAVEL CREW V2 - STAGE 4
+   ========================= */
+.app-top-tools{display:flex;justify-content:flex-end;min-height:42px;margin-bottom:-38px;position:relative;z-index:5}
+.notification-wrap{position:relative}
+.notification-button{position:relative;width:42px;height:42px;border:1px solid var(--line);background:white;border-radius:12px;font-size:19px}
+.notification-count{position:absolute;right:-5px;top:-5px;background:#e43e55;color:white;border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;font-size:11px;font-weight:800;padding:0 5px}
+.notification-popover{position:absolute;right:0;top:50px;width:min(390px,calc(100vw - 32px));background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 45px rgba(29,45,78,.18);padding:14px;z-index:20}
+.notification-heading{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px}
+.notification-list{display:grid;gap:8px;max-height:430px;overflow-y:auto}
+.notification-item{padding:11px;border:1px solid var(--line);border-radius:12px}
+.notification-item.unread{background:#f0f5ff;border-color:#ccdafa}
+.notification-item p{margin:5px 0;color:var(--muted);font-size:13px}.notification-item small{color:var(--muted)}
+.notification-actions{display:flex;gap:10px;margin-top:7px}
+.notification-actions a,.notification-actions button{border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:800;padding:0}
+
+.stage4-invite-row{align-items:center}
+.invite-actions{display:flex;gap:8px;align-items:center}.compact{min-height:34px;padding:6px 10px;font-size:12px}
+.invite-link-box{display:grid;gap:7px;background:#f1f6ff;border:1px solid #d3e0fd;border-radius:13px;padding:12px}
+.invite-link-box input{width:100%;border:1px solid #d8dfeb;border-radius:10px;padding:10px;background:white}
+
+.invite-public-page{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#eef4ff,#f4fbf8)}
+.invite-public-card{width:min(560px,100%);background:white;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 22px 60px rgba(35,55,90,.12);display:grid;gap:20px}
+.invite-trip-banner{padding:24px;border-radius:18px;background:linear-gradient(135deg,#184cbf,#336ee2 55%,#37a98b);color:white}
+.invite-trip-banner h1{margin:6px 0 8px;font-size:32px}.invite-trip-banner p{margin:0;opacity:.92}
+
+.weather-stage4{display:grid;gap:18px}
+.weather-search{display:flex;gap:10px;flex-wrap:wrap}.weather-search input{flex:1 1 320px;min-height:46px;border:1px solid #d8dfeb;border-radius:12px;padding:11px 13px}
+.location-results{display:grid;gap:7px;margin-top:12px}
+.location-results button{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;text-align:left;display:flex;justify-content:space-between;gap:12px}
+.location-results button span{color:var(--muted)}
+.weather-current{display:grid;grid-template-columns:1fr auto minmax(240px,.7fr);gap:24px;align-items:center;background:linear-gradient(135deg,#2458dc,#3c75dd 52%,#34a789);color:white;border-radius:22px;padding:26px}
+.weather-current h2{margin:6px 0}.weather-big{font-size:54px;font-weight:800}.weather-symbol{font-size:64px}
+.weather-details{display:grid;gap:10px}.weather-details div{display:flex;justify-content:space-between;gap:14px;border-top:1px solid rgba(255,255,255,.24);padding-top:9px}.weather-details div:first-child{border-top:0;padding-top:0}
+.forecast-grid{display:grid;grid-template-columns:repeat(7,minmax(130px,1fr));gap:10px;overflow-x:auto;padding-bottom:4px}
+.forecast-card{background:white;border:1px solid var(--line);border-radius:15px;padding:13px;min-width:130px;display:grid;gap:6px}
+.forecast-emoji{font-size:28px}.forecast-temp{display:flex;gap:7px}.forecast-temp span{color:var(--muted)}.forecast-card small{color:var(--muted)}
+
+.currency-card{max-width:760px;background:white;border:1px solid var(--line);border-radius:22px;padding:26px;display:grid;gap:20px}
+.currency-card h2{font-size:32px;margin:6px 0}.currency-card p{color:var(--muted)}
+.currency-form{display:grid;gap:16px}.currency-row{display:grid;grid-template-columns:1fr 52px 1fr;gap:10px;align-items:end}
+.currency-swap{width:46px;height:46px;border:1px solid #d5ddec;border-radius:50%;background:#edf3ff;color:var(--blue);font-size:22px}
+.currency-result{background:linear-gradient(135deg,#edf3ff,#edfaf5);border-radius:16px;padding:18px}
+.currency-result-main{font-size:20px;display:flex;flex-wrap:wrap;gap:9px;align-items:baseline}.currency-result-main strong{font-size:28px;color:var(--blue)}.currency-result small{display:block;color:var(--muted);margin-top:7px}
+
+.travel-map{width:100%;height:520px;border-radius:16px;overflow:hidden;background:#e8eef7}
+.travel-map-marker{width:31px;height:31px;border-radius:50%;display:grid;place-items:center;color:white;font-weight:900;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,.25);cursor:pointer}
+.travel-map-marker.destination{background:#2458dc}.travel-map-marker.place{background:#e24d72}.travel-map-marker.activity{background:#28a581}
+.map-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:13px}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}.legend-dot.destination{background:#2458dc}.legend-dot.place{background:#e24d72}.legend-dot.activity{background:#28a581}
+.weather-trip-card{padding-top:14px}.weather-trip-icon{font-size:46px;padding:12px 17px 0}
+
+@media(max-width:900px){
+  .weather-current{grid-template-columns:1fr auto}.weather-details{grid-column:1/-1}
+  .forecast-grid{grid-template-columns:repeat(14,130px)}
+  .travel-map{height:440px}
+}
+@media(max-width:700px){
+  .app-top-tools{margin-bottom:8px}
+  .notification-popover{position:fixed;right:16px;top:70px}
+  .weather-current{grid-template-columns:1fr}.weather-symbol{position:absolute;right:36px}
+  .currency-row{grid-template-columns:1fr 45px 1fr}
+  .travel-map{height:360px}
+}
+@media(max-width:480px){
+  .currency-row{grid-template-columns:1fr}.currency-swap{justify-self:center;transform:rotate(90deg)}
+  .weather-symbol{position:static}
+}
