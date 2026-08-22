@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { queueOfflineMutation } from "@/components/offline-sync-manager";
 
 type Checklist={id:string;title:string;category:string};
 type Item={id:string;checklist_id:string;title:string;assigned_to:string|null;due_date:string|null;completed:boolean;notes:string|null};
@@ -30,9 +31,29 @@ export function TripPrep({tripId,userId,tripEnd,members,initialChecklists,initia
 
   async function createChecklist(e:FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);setBusy(true);const {error}=await supabase.from("checklists").insert({trip_id:tripId,title:String(f.get("title")),category:String(f.get("category")),created_by:userId});if(error)setMessage(error.message);else{e.currentTarget.reset();await refresh();setMessage("Checklist created.");}setBusy(false)}
   async function addItem(e:FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);const checklistId=String(f.get("checklist_id")||"");if(!checklistId){setMessage("Create a checklist first.");return;}setBusy(true);const {error}=await supabase.from("checklist_items").insert({checklist_id:checklistId,trip_id:tripId,title:String(f.get("title")),assigned_to:String(f.get("assigned_to")||"")||null,due_date:String(f.get("due_date")||"")||null,notes:String(f.get("notes")||"")||null});if(error)setMessage(error.message);else{e.currentTarget.reset();await refresh();setMessage("Checklist item added.");}setBusy(false)}
-  async function toggleItem(i:Item){const {error}=await supabase.from("checklist_items").update({completed:!i.completed,completed_at:!i.completed?new Date().toISOString():null}).eq("id",i.id);if(error)setMessage(error.message);else await refresh()}
+  async function toggleItem(i:Item){
+    const next=!i.completed;
+    if(!navigator.onLine){
+      setItems(current=>current.map(x=>x.id===i.id?{...x,completed:next}:x));
+      queueOfflineMutation({trip_id:tripId,mutation_type:"checklist_toggle",payload:{id:i.id,completed:next}});
+      setMessage("Checklist change saved offline and will sync automatically.");
+      return;
+    }
+    const {error}=await supabase.from("checklist_items").update({completed:next,completed_at:next?new Date().toISOString():null}).eq("id",i.id);
+    if(error)setMessage(error.message);else await refresh();
+  }
   async function addPacking(e:FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);setBusy(true);const {error}=await supabase.from("packing_items").insert({trip_id:tripId,traveller_user_id:String(f.get("traveller_user_id")||"")||null,title:String(f.get("title")),category:String(f.get("category")),quantity:Number(f.get("quantity")||1),shared:f.get("shared")==="on",created_by:userId});if(error)setMessage(error.message);else{e.currentTarget.reset();await refresh();setMessage("Packing item added.");}setBusy(false)}
-  async function togglePacked(p:Packing){const {error}=await supabase.from("packing_items").update({packed:!p.packed}).eq("id",p.id);if(error)setMessage(error.message);else await refresh()}
+  async function togglePacked(p:Packing){
+    const next=!p.packed;
+    if(!navigator.onLine){
+      setPacking(current=>current.map(x=>x.id===p.id?{...x,packed:next}:x));
+      queueOfflineMutation({trip_id:tripId,mutation_type:"packing_toggle",payload:{id:p.id,packed:next}});
+      setMessage("Packing change saved offline and will sync automatically.");
+      return;
+    }
+    const {error}=await supabase.from("packing_items").update({packed:next}).eq("id",p.id);
+    if(error)setMessage(error.message);else await refresh();
+  }
   async function suggestPacking(){
     const suggestions=[
       ["Travel Documents","Passport / ID"],["Travel Documents","Travel insurance"],["Electronics","Phone charger"],["Electronics","Power adaptor"],["Toiletries","Toiletries bag"],["Clothes","Comfortable travel outfit"],["Medication","Regular medication"],["Other","Reusable water bottle"]

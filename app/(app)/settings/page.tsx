@@ -1,3 +1,4 @@
+import { PushSettings } from "@/components/push-settings";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentRole, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -33,6 +34,7 @@ export default async function SettingsPage() {
         </div>
         <div style={{ marginTop: 18 }}><LogoutButton /></div>
       </section>
+      <PushSettings />
     </>
   );
 }

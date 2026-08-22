@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
 import { TripPlannerStage5 } from "@/components/trip-planner-stage5";
+import { ConflictChecker } from "@/components/conflict-checker";
 
 export default async function TripPlanPage({ params }: { params: Promise<{ tripId:string }> }) {
   const { tripId } = await params;
@@ -21,5 +22,5 @@ export default async function TripPlanPage({ params }: { params: Promise<{ tripI
   return <>
     <TripWorkspaceHeader trip={tripData as Trip} active="plan"/>
     <TripPlannerStage5 tripId={tripId} userId={user.id} tripStart={tripData.start_date} tripEnd={tripData.end_date} initialDays={days??[]} initialActivities={activities??[]} destination={destination??null}/>
-  </>;
+  <ConflictChecker tripId={tripId}/></>;
 }

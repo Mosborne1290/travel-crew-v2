@@ -3,6 +3,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { NotificationBell } from "@/components/notification-bell";
 import { MobileNav } from "@/components/mobile-nav";
 import { ReminderWatcher, NotificationPermissionButton } from "@/components/reminder-watcher";
+import { OfflineSyncManager } from "@/components/offline-sync-manager";
 
 type Reminder = { id:string; title:string; message:string|null; remind_at:string; target_url:string|null };
 
@@ -58,6 +59,9 @@ export function AppShell({
           <Link className="nav-link" href="/money">
             <span>💱</span> <span className="nav-text">Travel Money</span>
           </Link>
+          <Link className="nav-link" href="/near-me">
+            <span>📍</span> <span className="nav-text">Near Me</span>
+          </Link>
           <Link className="nav-link" href="/settings">
             <span>⚙</span> <span className="nav-text">Settings</span>
           </Link>
@@ -75,7 +79,7 @@ export function AppShell({
       </aside>
 
       <main className="content-shell">
-        <div className="app-top-tools">
+        <div className="app-top-tools"><OfflineSyncManager />
           <NotificationPermissionButton />
           <NotificationBell userId={userId} initialNotifications={notifications} />
         </div>

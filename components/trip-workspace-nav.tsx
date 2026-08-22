@@ -9,7 +9,7 @@ export function TripWorkspaceNav({
     | "overview" | "today" | "plan" | "bookings" | "travellers"
     | "explore" | "places" | "map" | "weather" | "chat"
     | "polls" | "photos" | "journal" | "checklists"
-    | "documents" | "important" | "budget" | "money" | "assistant";
+    | "documents" | "important" | "activity" | "budget" | "settlements" | "money" | "assistant";
 }) {
   const tabs = [
     { id: "overview", label: "Overview", href: `/trips/${tripId}` },
@@ -27,8 +27,10 @@ export function TripWorkspaceNav({
     { id: "journal", label: "Journal", href: `/trips/${tripId}/journal` },
     { id: "checklists", label: "Checklists", href: `/trips/${tripId}/checklists` },
     { id: "documents", label: "Documents", href: `/trips/${tripId}/documents` },
+    { id: "activity", label: "Activity Feed", href: `/trips/${tripId}/activity` },
     { id: "important", label: "Important Info", href: `/trips/${tripId}/important` },
     { id: "budget", label: "Budget", href: `/trips/${tripId}/budget` },
+    { id: "settlements", label: "Settle Up", href: `/trips/${tripId}/settlements` },
     { id: "money", label: "Money", href: `/trips/${tripId}/money` },
   ] as const;
 

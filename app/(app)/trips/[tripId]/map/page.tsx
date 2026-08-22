@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
 import { TripMap } from "@/components/trip-map";
+import { RoutePlanner } from "@/components/route-planner";
 
 export default async function TripMapPage({params}:{params:Promise<{tripId:string}>}){
   const {tripId}=await params;const supabase=await createClient();
@@ -20,5 +21,5 @@ export default async function TripMapPage({params}:{params:Promise<{tripId:strin
     ...(places??[]).filter(p=>p.latitude!=null&&p.longitude!=null).map(p=>({id:`place-${p.id}`,kind:"place" as const,category:p.category,name:p.name,latitude:Number(p.latitude),longitude:Number(p.longitude),detail:p.address||p.category||null,date:null})),
     ...(activities??[]).filter(p=>p.latitude!=null&&p.longitude!=null).map(p=>({id:`activity-${p.id}`,kind:"activity" as const,category:p.activity_type,name:p.title,latitude:Number(p.latitude),longitude:Number(p.longitude),detail:p.venue_name||p.address||null,date:p.itinerary_day_id?dayMap.get(p.itinerary_day_id)||null:null})),
   ];
-  return <><TripWorkspaceHeader trip={tripData as Trip} active="map"/><TripMap points={points}/></>;
+  return <><TripWorkspaceHeader trip={tripData as Trip} active="map"/><TripMap points={points}/><RoutePlanner points={points.map(p=>({id:p.id,name:p.name,latitude:p.latitude,longitude:p.longitude}))}/></>;
 }

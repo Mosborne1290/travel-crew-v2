@@ -18,7 +18,7 @@ export function TripWorkspaceHeader({
     | "overview" | "today" | "plan" | "bookings" | "travellers"
     | "explore" | "places" | "map" | "weather" | "chat"
     | "polls" | "photos" | "journal" | "checklists"
-    | "documents" | "important" | "budget" | "money" | "assistant";
+    | "documents" | "important" | "activity" | "budget" | "settlements" | "money" | "assistant";
 }) {
   return (
     <>

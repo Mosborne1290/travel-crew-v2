@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
 import { TripPrep } from "@/components/trip-prep";
+import { AutoReminders } from "@/components/auto-reminders";
 
 export default async function PrepPage({params}:{params:Promise<{tripId:string}>}){
  const {tripId}=await params;const user=await requireUser();const supabase=await createClient();
@@ -18,5 +19,5 @@ export default async function PrepPage({params}:{params:Promise<{tripId:string}>
  if(!trip)notFound();
  const ids=(memberRows??[]).map(m=>m.user_id);const {data:profiles}=ids.length?await supabase.from("profiles").select("id,display_name,first_name,last_name").in("id",ids):{data:[] as any[]};
  const members=ids.map(id=>{const p=(profiles??[]).find(x=>x.id===id);return{user_id:id,display_name:p?.display_name||[p?.first_name,p?.last_name].filter(Boolean).join(" ")||"Traveller"}});
- return <><TripWorkspaceHeader trip={trip as Trip} active="checklists"/><TripPrep tripId={tripId} userId={user.id} tripEnd={trip.end_date} members={members} initialChecklists={checklists??[]} initialItems={items??[]} initialPacking={packing??[]} initialReminders={reminders??[]}/></>;
+ return <><TripWorkspaceHeader trip={trip as Trip} active="checklists"/><AutoReminders tripId={tripId}/><TripPrep tripId={tripId} userId={user.id} tripEnd={trip.end_date} members={members} initialChecklists={checklists??[]} initialItems={items??[]} initialPacking={packing??[]} initialReminders={reminders??[]}/></>;
 }

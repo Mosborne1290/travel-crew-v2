@@ -637,3 +637,33 @@ button { cursor: pointer; }
 @media(max-width:1000px){.today-grid,.journal-stage6,.polls-stage6{grid-template-columns:1fr}.stage6-tab-grid{grid-template-columns:1fr}.reminder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-stage6-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.today-hero{flex-direction:column;align-items:flex-start}.today-hero h2{font-size:30px}.timeline-stage6 article{grid-template-columns:60px 38px minmax(0,1fr)}.mini-form{grid-template-columns:1fr}.reminder-grid,.dashboard-stage6-stats{grid-template-columns:1fr 1fr}.journal-timeline article{grid-template-columns:1fr}.memory-photo-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.reminder-grid,.dashboard-stage6-stats,.memory-photo-grid{grid-template-columns:1fr}}
+
+
+/* =========================
+   TRAVEL CREW V2 - STAGE 7
+   ========================= */
+.push-settings{max-width:760px;margin-top:18px}.push-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#f4f7fc;color:var(--muted)}
+.sync-indicator{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:white;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;color:#5a6679}.sync-indicator span{font-size:10px}.sync-indicator.online span{color:#25a888}.sync-indicator.offline span{color:#dc5a63}.sync-indicator button{border:0;background:transparent;color:#2458dc;font-size:11px;font-weight:800;padding:0}
+
+.near-me-stage7{display:grid;gap:16px}.near-me-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.route-planner{margin-top:16px}.route-form{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;gap:8px;align-items:center}.route-form select{border:1px solid #d8dfeb;border-radius:10px;padding:10px}.route-result{margin-top:12px;border-radius:12px;background:linear-gradient(135deg,#edf3ff,#edf9f5);padding:14px;display:flex;gap:14px;align-items:baseline}.route-result strong{font-size:24px;color:#2458dc}.route-result span{color:var(--muted)}
+
+.conflict-checker{margin-top:18px}.conflict-list{display:grid;gap:9px}.conflict{position:relative;border:1px solid var(--line);border-left-width:5px;border-radius:12px;padding:12px}.conflict.high{border-left-color:#dc4658}.conflict.medium{border-left-color:#e7a73f}.conflict.low{border-left-color:#4d86d7}.conflict p{margin:5px 0;color:var(--muted)}.conflict .badge{position:absolute;right:10px;top:10px}
+
+.feed-stage7{max-width:940px}.feed-list{display:grid;gap:0}.feed-list article{display:grid;grid-template-columns:46px minmax(0,1fr);gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.feed-icon{width:42px;height:42px;border-radius:13px;background:#edf3ff;display:grid;place-items:center;font-size:20px}.feed-list p{margin:5px 0}
+
+.settlements-stage7{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px}.settlements-stage7>section:last-child{grid-column:1/-1}.balance-list{display:grid;gap:9px}.balance-list article{border:1px solid var(--line);border-radius:13px;padding:13px}.balance-list article>div{display:flex;justify-content:space-between;gap:12px;align-items:center}.balance-list span{font-size:20px;font-weight:800;color:#2458dc}
+
+.auto-reminders{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px}.auto-reminders small{color:var(--muted)}
+
+@media(max-width:1000px){
+ .near-me-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .settlements-stage7{grid-template-columns:1fr}
+ .settlements-stage7>section:last-child{grid-column:auto}
+}
+@media(max-width:700px){
+ .near-me-grid{grid-template-columns:1fr}
+ .route-form{grid-template-columns:1fr}.route-form>span{transform:rotate(90deg);justify-self:center}
+ .app-top-tools{gap:6px;flex-wrap:wrap}
+ .sync-indicator{order:3}
+}
