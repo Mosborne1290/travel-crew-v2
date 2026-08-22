@@ -19,7 +19,7 @@ export default async function ProtectedLayout({
       .maybeSingle(),
     supabase
       .from("notifications")
-      .select("id,title,message,target_url,read_at,created_at")
+      .select("id,title,message,target_url,read_at,created_at,notification_type")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20),

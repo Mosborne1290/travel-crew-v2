@@ -10,6 +10,7 @@ type Notification = {
   target_url: string | null;
   read_at: string | null;
   created_at: string;
+  notification_type?: string | null;
 };
 
 export function AppShell({
