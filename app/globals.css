@@ -688,3 +688,16 @@ button { cursor: pointer; }
 
 @media(max-width:850px){.document-health-grid{grid-template-columns:repeat(2,1fr)}.flight-intel-list article{grid-template-columns:1fr}.health-stage8{grid-template-columns:1fr}.owner-user-list article{grid-template-columns:40px minmax(0,1fr)}.owner-user-list article select,.owner-user-list article button{grid-column:2}.search-results a{grid-template-columns:1fr}.audit-checks{grid-template-columns:1fr}}
 @media(max-width:560px){.trip-search-bar{grid-template-columns:1fr}.document-health-grid{grid-template-columns:1fr}}
+
+
+/* Stage 8 Hotfix 1 - sidebar logout contrast */
+.logout-white,
+.logout-white:hover,
+.logout-white:focus,
+.logout-white:active {
+  color: #ffffff !important;
+}
+
+.logout-white * {
+  color: #ffffff !important;
+}
