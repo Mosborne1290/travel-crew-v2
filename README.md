@@ -895,3 +895,311 @@ browser notifications while the PWA is active/backgrounded.
 The next logical rollout is Stage 7: stronger offline sync, true opt-in web
 push, location-aware "near me" tools, automatic itinerary conflict detection,
 and a polished group trip activity feed.
+
+
+---
+
+# Stage 7 - On-the-Road Reliability
+
+Stage 7 focuses on the parts of Travel Crew that matter most while you are
+actually travelling.
+
+## IMPORTANT - Stage 7 installation has three backend steps
+
+### Step 1 - Run the Stage 7 database migration
+
+Run:
+
+`supabase/stage7-migration.sql`
+
+in Supabase -> SQL Editor.
+
+This adds:
+- push subscription storage
+- trip activity feed
+- offline mutation queue
+- automatic reminder rules
+- expense settlements
+- audit log
+- automatic activity-feed triggers
+- automatic reminder generator
+- Stage 7 RLS and realtime configuration
+
+It does not delete Stage 1-6 trip data.
+
+### Step 2 - Configure true Web Push
+
+Generate one VAPID key pair.
+
+A convenient command after installing the project dependencies is:
+
+`npx web-push generate-vapid-keys`
+
+Keep the PRIVATE key secret.
+
+Add to Vercel:
+
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`
+- `VAPID_PRIVATE_KEY`
+- `VAPID_SUBJECT`
+
+Example VAPID subject:
+
+`mailto:your-email@example.com`
+
+The private key is server-only. Never prefix it with `NEXT_PUBLIC_`.
+
+Then redeploy Vercel.
+
+In Supabase -> Edge Functions, deploy:
+
+`supabase/functions/push-reminders`
+
+Configure these Edge Function secrets using the SAME VAPID key pair:
+
+- `VAPID_PUBLIC_KEY`
+- `VAPID_PRIVATE_KEY`
+- `VAPID_SUBJECT`
+- `CRON_SECRET`
+
+`CRON_SECRET` should be a new long random value.
+
+Supabase Edge Functions already provide the Supabase URL and service-role
+credentials in the hosted function environment.
+
+### Step 3 - Schedule push reminders with Supabase Cron
+
+After the Edge Function is deployed, open:
+
+`supabase/stage7-push-cron-setup.sql`
+
+Replace:
+- `YOUR_PROJECT_REF`
+- the placeholder cron secret
+
+Use the SAME `CRON_SECRET` configured for the Edge Function.
+
+Then run that SQL in Supabase.
+
+The job checks reminders every 15 minutes.
+
+Stage 7 intentionally does NOT use Vercel Cron for this. The Travel Crew
+project is designed to remain compatible with Vercel Hobby/free hosting.
+
+## Stage 7 Features
+
+### True Web Push
+
+Settings -> Push Notifications
+
+Users can:
+- enable push per device
+- send a test push
+- receive scheduled Travel Crew reminder notifications
+- click a notification to open the relevant trip screen
+
+Push subscriptions are private to the signed-in user.
+
+### Automatic Reminder Generation
+
+Trip -> Checklists now includes:
+
+`Create Automatic Reminders`
+
+Travel Crew creates reminders for:
+- upcoming itinerary activities
+- upcoming bookings
+
+The reminder generator avoids recreating the same reminder repeatedly.
+
+### Near Me
+
+Main navigation -> Near Me
+
+Uses device geolocation only after the traveller chooses to use it.
+
+Categories include:
+- Restaurants
+- Cafes
+- Pharmacies
+- Supermarkets
+- Hospitals
+- Toilets
+- Fuel
+- Attractions
+
+Results are sorted approximately by distance.
+
+### Route Planning
+
+Trip -> Map includes Route Between Stops.
+
+Choose two mapped trip locations and Travel Crew shows:
+- approximate driving distance
+- approximate driving time
+
+The Stage 7 personal-use implementation uses the public OSRM routing service.
+
+### Itinerary Conflict Detection
+
+Trip -> Plan -> Check My Trip
+
+Travel Crew checks for:
+- overlapping itinerary activities
+- activity / booking clashes
+- transfer gaps that look too short
+- large itinerary gaps
+
+These are planning warnings rather than guarantees of real travel time.
+
+### Activity Feed
+
+Trip -> Activity Feed
+
+Automatically records major collaborative changes such as:
+- itinerary activity added
+- booking added
+- saved place added
+- photo added
+- expense added
+- checklist updated/completed
+- poll created
+
+The feed updates in realtime.
+
+### Settle Up
+
+Trip -> Settle Up
+
+Shows:
+- who owes whom
+- net amount owing
+- settlement history
+- record bank/cash settlement
+
+Existing expense splits feed the balance calculation.
+
+### Stronger Offline Sync
+
+Stage 7 adds an offline change queue for:
+- checklist completion
+- packing completion
+- journal entries
+
+When offline:
+- the screen updates immediately
+- the change is queued in the browser
+
+When the connection returns:
+- Travel Crew automatically sends queued changes to Supabase
+- duplicate client mutations are protected by a unique mutation ID
+- failed items remain queued for retry
+
+A Sync / Offline indicator appears in the app toolbar.
+
+This extends the Stage 6 read-only downloaded trip snapshot.
+
+### Production Hardening
+
+Stage 7 also adds:
+- server-side validation on new Stage 7 APIs
+- protected push subscriptions
+- RLS for new collaborative tables
+- secure Supabase Cron secret validation
+- security response headers
+- geolocation permission policy
+- audit-log foundation
+- stale push-subscription cleanup
+
+## New navigation
+
+The main navigation adds:
+
+- Near Me
+
+Trip navigation adds:
+
+- Activity Feed
+- Settle Up
+
+The existing Today, Plan, Chat, Polls, Journal, Checklists and other Stage 6
+screens remain.
+
+## Recommended Stage 7 test
+
+### Database
+1. Run `stage7-migration.sql`.
+2. Confirm success before deploying the code.
+
+### Basic deploy
+1. Upload Stage 7 to GitHub.
+2. Commit to `main`.
+3. Confirm Vercel deployment is Ready.
+
+### Conflict checker
+1. Create two overlapping itinerary activities.
+2. Plan -> Check My Trip.
+3. Confirm the overlap warning appears.
+
+### Near Me
+1. Open Near Me on your phone.
+2. Allow location access.
+3. Search Restaurants or Pharmacies.
+
+### Route
+1. Open a trip with mapped places.
+2. Map -> Route Between Stops.
+3. Select two locations.
+4. Confirm distance/time display.
+
+### Activity Feed
+1. Add a saved place or expense.
+2. Open Activity Feed.
+3. Confirm the event appears.
+
+### Settle Up
+1. Add a split expense.
+2. Open Settle Up.
+3. Confirm who owes whom.
+4. Record a settlement.
+
+### Offline Sync
+1. Open Travel Crew online.
+2. disconnect the network.
+3. tick a checklist item or packing item.
+4. confirm the Sync indicator shows Offline/pending.
+5. reconnect.
+6. confirm the queued change syncs.
+
+### Push
+1. Configure VAPID keys in Vercel and Supabase Edge Functions.
+2. Deploy `push-reminders`.
+3. schedule it using `stage7-push-cron-setup.sql`.
+4. Settings -> Enable Push.
+5. Settings -> Send Test Push.
+6. create an upcoming reminder.
+7. confirm a closed/backgrounded PWA receives the notification where the
+   operating system/browser supports Web Push.
+
+## Free-hosting note
+
+Travel Crew Stage 7 continues to use Vercel Hobby for the web application.
+Scheduled reminder delivery uses Supabase Cron + Supabase Edge Functions
+instead of frequent Vercel Cron jobs.
+
+External public services used by Stage 7 include OpenStreetMap/Overpass and
+the OSRM demo routing service. These are suitable for light personal use, but
+should not be treated as an unlimited commercial routing/places backend.
+
+## What remains after Stage 7
+
+The next polish/finalisation release can focus on:
+- richer route alternatives and walking mode
+- background location suggestions
+- full offline create/edit for bookings and itinerary activities
+- document expiry automation
+- automatic flight check-in reminders
+- trip-wide search
+- activity-feed filtering
+- admin/user management and backup/export
+- deeper testing and UX polish
