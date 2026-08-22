@@ -419,3 +419,200 @@ Convert AUD to another currency.
 
 ### Notifications
 After an invited user joins, their notification bell should show a new trip notification.
+
+
+---
+
+# Stage 5 - Complete Smart Travel Rollout
+
+Stage 5 combines all of the planned Stage 5 releases into one upgrade.
+
+## IMPORTANT - run the Stage 5 migration
+
+Before deploying the Stage 5 code, run:
+
+`supabase/stage5-migration.sql`
+
+in Supabase -> SQL Editor.
+
+The migration adds:
+- safe "share to trip chat" helper
+- budget summary helper
+
+It does not delete or replace existing trip data.
+
+## Stage 5 features
+
+### 5A - Budget, Expenses & Receipts
+Trip -> Budget now includes:
+- category budgets
+- total planned / spent / remaining
+- expenses in multiple currencies
+- automatic conversion back to trip home currency
+- paid-by traveller
+- expense splitting between trip members
+- owed / paid / settled status
+- receipt upload to the existing private `receipts` bucket
+
+### 5B - Detailed Bookings
+Trip -> Bookings now has dedicated fields for:
+
+Flight:
+- airline
+- flight number
+- departure / arrival airports
+- terminals
+- seat
+- cabin class
+
+Hotel:
+- property name
+- address
+- room type / room number
+- phone / email / website
+
+Cruise:
+- cruise line
+- ship
+- embarkation / disembarkation ports
+- cabin number / cabin type
+
+Booking dates are also added to the matching itinerary day when that day exists.
+
+### 5C - Upgraded Plan My Trip
+Plan includes:
+- Day view
+- Calendar view
+- Full Trip view
+- edit activity
+- move activity to another day
+- duplicate
+- delete
+- drag to reorder within a day
+- automatic coordinate search when an address/place is entered
+- share activity to trip chat
+- weather shown against itinerary dates when they are within Open-Meteo's 14-day forecast
+- Generate Trip Days for new trips
+
+### 5D - Explore, Saved Places & Map
+Explore:
+- nearby Things To Do
+- restaurants
+- cafes
+- museums
+- parks and gardens
+- uses OpenStreetMap / Overpass discovery
+- save result directly to Saved Places
+- saved results already include coordinates
+- share results to Chat
+
+Saved Places:
+- automatic location lookup
+- Find Location / remap
+- share to Chat
+
+Map filters:
+- All
+- Today
+- Hotels
+- Food
+- Attractions
+- Saved
+
+### 5E - Weather + Itinerary
+Weather continues to provide current conditions and 14 days.
+Plan My Trip displays matching forecast information on itinerary days.
+Weather can be shared directly to the trip chat.
+
+### 5F - PWA / Mobile
+Travel Crew is now a Progressive Web App:
+- manifest
+- 192px and 512px app icons
+- service worker
+- offline fallback shell
+- standalone display mode
+- mobile bottom navigation
+- floating quick-add control
+- mobile More menu
+
+Install from your phone browser using Add to Home Screen / Install App.
+
+### 5G - Trip PDF
+Trip -> Export Trip opens a print-ready trip book.
+
+Two modes:
+- Full Trip Book
+- Simple Itinerary
+
+Choose "Print / Save as PDF" and use your browser's PDF destination.
+
+No PDF API or paid PDF service is required.
+
+### 5H - Ask Travel Crew AI
+Trip header -> "Ask Travel Crew"
+
+The assistant can read:
+- trip dates and destination
+- itinerary
+- bookings
+- saved places
+- currently available 14-day weather
+
+Suggestions never change the trip automatically.
+For each recommendation you can:
+- Add to Itinerary
+- Save Place
+- Share to Chat
+
+AI is OPTIONAL. Everything else in Stage 5 works without it.
+
+## Optional OpenAI API environment variable
+
+To activate Ask Travel Crew, add this in Vercel:
+
+`OPENAI_API_KEY`
+
+Apply it to Production and Preview, then redeploy.
+
+Do NOT use `NEXT_PUBLIC_` in the variable name.
+
+The Stage 5 implementation uses the OpenAI Responses API with
+`gpt-5.6-luna` to keep personal trip-planning requests relatively cost-conscious.
+
+Your ChatGPT subscription does not include OpenAI API usage; API usage is billed separately.
+
+## No additional API keys required for
+
+- Open-Meteo weather
+- Frankfurter currency
+- MapLibre
+- OpenStreetMap map tiles
+- OpenStreetMap / Overpass Explore
+
+For a small private friends-and-family app these are used conservatively and requests are cached where appropriate.
+
+## Deployment order
+
+1. Run `supabase/stage5-migration.sql`.
+2. Upload the Stage 5 project over the existing GitHub repository.
+3. Commit to `main`.
+4. Let Vercel deploy.
+5. If using AI, add `OPENAI_API_KEY` in Vercel and redeploy.
+
+## Recommended Stage 5 test
+
+1. Open an existing trip.
+2. Plan -> test Day / Calendar / Full Trip.
+3. Edit and move an activity.
+4. Drag activities to reorder them.
+5. Add a flight with full details.
+6. Confirm it also appears on the itinerary when the booking date matches a trip day.
+7. Explore -> search nearby attractions.
+8. Save one place and confirm it appears on Map.
+9. Budget -> set a category budget.
+10. Add an expense and split it between travellers.
+11. Upload a receipt.
+12. Weather -> share conditions to Chat.
+13. Export Trip -> test Full Book and Simple Itinerary -> Save as PDF.
+14. Install Travel Crew to a phone home screen.
+15. If OPENAI_API_KEY is configured, test Ask Travel Crew.

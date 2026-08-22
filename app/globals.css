@@ -374,3 +374,135 @@ button { cursor: pointer; }
   .currency-row{grid-template-columns:1fr}.currency-swap{justify-self:center;transform:rotate(90deg)}
   .weather-symbol{position:static}
 }
+
+
+/* =========================
+   TRAVEL CREW V2 - STAGE 5
+   ========================= */
+.assistant-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#6d3fc6,#2458dc);color:white;font-weight:800}
+.trip-stage5-header .header-actions{align-items:center}
+.inline-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.inline-actions button,.inline-actions a{border:0;background:#edf3ff;color:#2458dc;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:800}
+.inline-actions .danger-text,.danger-text{color:#b72f43;background:#fff0f2}
+.map-status{font-size:12px;color:var(--muted);margin-top:5px}
+
+.budget-stage5{display:grid;gap:18px}
+.budget-bars{display:grid;gap:14px}
+.budget-row{display:grid;gap:6px}
+.budget-row-head{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.budget-track{height:9px;border-radius:999px;background:#edf1f7;overflow:hidden}
+.budget-track i{display:block;height:100%;background:linear-gradient(90deg,#2458dc,#25a888);border-radius:999px}
+.compact-form{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.member-check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.member-check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px}
+.member-check input{width:auto;min-height:auto}
+.expense-stack{display:grid;gap:12px}
+.expense-card{border:1px solid var(--line);border-radius:15px;padding:15px;display:grid;grid-template-columns:minmax(0,.8fr) minmax(320px,1.2fr);gap:18px}
+.expense-main strong{font-size:18px}
+.expense-amount{font-size:22px;font-weight:800;margin-top:8px;color:#2458dc}
+.expense-amount small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.split-list{display:grid;gap:7px}
+.split-list>div{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;background:#f7f9fc;padding:8px 10px;border-radius:10px;font-size:12px}
+.split-list button{border:0;background:transparent;color:#2458dc;font-weight:800;font-size:11px}
+.split-status{border-radius:999px;padding:4px 8px;text-transform:capitalize;font-weight:800}
+.split-status.owed{background:#fff1d8;color:#9b6111}.split-status.paid,.split-status.settled{background:#e9faf3;color:#19745b}
+
+.advanced-bookings-stage5{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(350px,.85fr);gap:18px}
+.advanced-booking-card{align-items:start}
+.booking-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px;margin-top:8px;font-size:13px}
+
+.planner-stage5{display:grid;gap:18px}
+.planner-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.view-switch{display:flex;gap:6px}
+.view-switch button{border:1px solid var(--line);background:white;padding:8px 12px;border-radius:10px;font-weight:800}
+.view-switch button.active{background:#2458dc;color:white;border-color:#2458dc}
+.stage5-activity{grid-template-columns:28px 72px 42px minmax(0,1fr) auto}
+.drag-handle{cursor:grab;color:#8b97aa;font-size:20px}
+.activity-action-menu{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.activity-action-menu button{border:0;background:#edf3ff;color:#2458dc;border-radius:8px;padding:6px 8px;font-size:11px;font-weight:800}
+.calendar-stage5{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.calendar-day-card{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;min-height:180px}
+.calendar-day-card header{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:9px}
+.calendar-day-card header strong,.calendar-day-card header span{display:block}
+.calendar-day-card>div{display:grid;gap:6px}
+.calendar-day-card button{border:0;background:#f3f6fb;border-radius:9px;padding:8px;text-align:left;font-size:12px}
+.calendar-day-card button span{font-weight:800;margin-right:6px}
+.full-trip-stage5{display:grid;gap:15px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(10,20,40,.52);display:grid;place-items:center;padding:20px;z-index:100}
+.modal-card{width:min(720px,100%);max-height:92vh;overflow-y:auto;background:white;border-radius:20px;padding:22px;box-shadow:0 20px 70px rgba(0,0,0,.3)}
+
+.ai-stage5{display:grid;gap:18px}
+.ai-hero{background:linear-gradient(135deg,#5d38bd,#2458dc 56%,#25a888);color:white;border-radius:22px;padding:28px}
+.ai-hero h2{font-size:34px;margin:7px 0}.ai-hero p{max-width:780px;opacity:.9}
+.ai-prompt-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.ai-prompt-chips button{border:1px solid #d5def0;background:#f5f8ff;border-radius:999px;padding:8px 12px;color:#3156a7}
+.ai-form{display:grid;gap:10px}.ai-form textarea{border:1px solid #d8dfeb;border-radius:13px;padding:13px;resize:vertical}
+.ai-answer p{font-size:16px;line-height:1.6}
+.ai-suggestion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.ai-suggestion{background:white;border:1px solid var(--line);border-radius:17px;padding:17px}
+.ai-suggestion h3{margin:6px 0}.ai-suggestion p{line-height:1.5;color:#445066}
+
+.explore-stage5{display:grid;gap:18px}
+.explore-hero{display:grid;gap:16px}.explore-hero h2{font-size:30px;margin:6px 0}
+.explore-cats{display:flex;flex-wrap:wrap;gap:8px}
+.explore-cats button{border:1px solid var(--line);background:white;border-radius:999px;padding:8px 12px;font-weight:800;color:#536179}
+.explore-cats button.active{background:#2458dc;color:white;border-color:#2458dc}
+.explore-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.explore-card{background:white;border:1px solid var(--line);border-radius:17px;padding:16px}
+.explore-pin{width:40px;height:40px;border-radius:12px;background:#edf3ff;display:grid;place-items:center;font-size:20px}
+.explore-card h3{margin:10px 0 7px}
+
+.map-filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.map-filter-row button{border:1px solid var(--line);background:white;color:#58667b;border-radius:999px;padding:7px 11px;font-weight:800;font-size:12px}
+.map-filter-row button.active{background:#2458dc;color:white;border-color:#2458dc}
+
+.mobile-bottom-nav,.mobile-fab,.mobile-more-sheet,.mobile-add-sheet{display:none}
+
+.print-trip{max-width:1000px;margin:0 auto;background:white;color:#101827;padding:28px}
+.print-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.print-toolbar a{border:1px solid var(--line);padding:10px 13px;border-radius:10px}
+.print-cover{min-height:420px;border-radius:24px;padding:36px;display:flex;align-items:end;background:linear-gradient(135deg,#2458dc,#25a888);background-size:cover;background-position:center;color:white}
+.print-cover h1{font-size:48px;margin:7px 0}.print-cover p{font-size:22px;margin:0 0 8px}
+.print-section{padding:26px 4px;border-bottom:1px solid #dfe5ee}.print-section h2{font-size:26px;margin-top:0}
+.print-info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.print-info-grid div{background:#f5f7fb;border-radius:12px;padding:13px}.print-info-grid span,.print-info-grid strong{display:block}.print-info-grid span{color:#68758c;font-size:12px;margin-bottom:4px}
+.print-list{display:grid;gap:9px}.print-list article,.print-list>div{border:1px solid #e1e6ef;border-radius:10px;padding:11px}.print-list strong,.print-list span{display:block}.print-list span{color:#68758c;font-size:13px;margin-top:3px}
+.print-day{break-inside:avoid;margin-top:18px}.print-day h3{border-left:4px solid #2458dc;padding-left:10px}.print-footer{text-align:center;padding:20px;color:#68758c}
+
+@media(max-width:1000px){
+  .advanced-bookings-stage5{grid-template-columns:1fr}
+  .calendar-stage5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .explore-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .expense-card{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  body{padding-bottom:72px}
+  .sidebar{display:none}
+  .app-layout{display:block}
+  .content-shell{padding:16px 14px 95px}
+  .mobile-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:90;background:white;border-top:1px solid #dfe5ee;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(7px + env(safe-area-inset-bottom))}
+  .mobile-bottom-nav a,.mobile-bottom-nav button{border:0;background:transparent;display:grid;gap:2px;place-items:center;color:#667389;font-size:11px;padding:5px 2px}
+  .mobile-bottom-nav span{font-size:19px;color:#2458dc}
+  .mobile-fab{display:grid;place-items:center;position:fixed;right:18px;bottom:76px;z-index:92;width:54px;height:54px;border-radius:50%;border:0;background:#2458dc;color:white;font-size:28px;box-shadow:0 8px 24px rgba(36,88,220,.3)}
+  .mobile-more-sheet,.mobile-add-sheet{display:grid;position:fixed;left:14px;right:14px;bottom:76px;z-index:91;background:white;border:1px solid #dfe5ee;border-radius:18px;padding:16px;box-shadow:0 16px 50px rgba(25,40,70,.2);gap:8px}
+  .mobile-more-sheet a{padding:9px;border-radius:9px;background:#f5f7fb}
+  .mobile-add-sheet{bottom:140px}.quick-add-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.quick-add-grid span{padding:10px;background:#f5f7fb;border-radius:10px}
+  .trip-stage5-header{padding-right:0;flex-direction:column}.trip-stage5-header .header-actions{width:100%}
+  .assistant-button{flex:1}
+  .planner-toolbar{align-items:flex-start;flex-direction:column}
+  .stage5-activity{grid-template-columns:22px 58px 38px minmax(0,1fr)}
+  .activity-action-menu{grid-column:4;justify-content:flex-start}
+  .calendar-stage5,.explore-grid,.ai-suggestion-grid{grid-template-columns:1fr}
+  .member-check-grid{grid-template-columns:1fr}
+  .print-info-grid{grid-template-columns:1fr}
+}
+@media print{
+  body{background:white!important;padding:0!important}
+  .sidebar,.mobile-bottom-nav,.mobile-fab,.app-top-tools,.no-print{display:none!important}
+  .app-layout{display:block!important}
+  .content-shell{padding:0!important}
+  .print-trip{max-width:none;padding:0}
+  .print-cover{min-height:90vh;border-radius:0;page-break-after:always}
+  .print-section{break-inside:auto}
+  @page{size:A4;margin:14mm}
+}

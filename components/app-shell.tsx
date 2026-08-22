@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 import { NotificationBell } from "@/components/notification-bell";
+import { MobileNav } from "@/components/mobile-nav";
 
 type Notification = {
   id: string;
@@ -73,6 +74,7 @@ export function AppShell({
         </div>
         {children}
       </main>
+          <MobileNav />
     </div>
   );
 }

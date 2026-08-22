@@ -166,6 +166,16 @@ export function TripWeather({
     setBusy(false);
   }
 
+  async function shareWeather() {
+    if (!forecast?.current || !destination) return;
+    const { error } = await supabase.rpc("share_trip_item_to_chat", {
+      p_trip_id: tripId,
+      p_message_text: `🌤 ${destination.name}: ${Math.round(forecast.current.temperature_2m)}°C, ${weatherLabel(forecast.current.weather_code)} · Wind ${Math.round(forecast.current.wind_speed_10m)} km/h`,
+      p_message_type: "text",
+    });
+    setMessage(error ? error.message : "Weather shared to trip chat.");
+  }
+
   return (
     <div className="weather-stage4">
       <section className="panel">

@@ -115,8 +115,9 @@ export function TripDocuments({
   }
 
   async function openDocument(row: DocumentRow) {
+    const bucket = row.document_type === "receipt" ? "receipts" : "trip-documents";
     const result = await supabase.storage
-      .from("trip-documents")
+      .from(bucket)
       .createSignedUrl(row.storage_path, 60 * 10);
 
     if (result.error || !result.data?.signedUrl) {
@@ -136,7 +137,8 @@ export function TripDocuments({
       return;
     }
 
-    await supabase.storage.from("trip-documents").remove([row.storage_path]);
+    const bucket = row.document_type === "receipt" ? "receipts" : "trip-documents";
+    await supabase.storage.from(bucket).remove([row.storage_path]);
     await refresh();
   }
 

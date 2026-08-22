@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { PwaRegister } from "@/components/pwa-register";
 
 export const metadata: Metadata = {
   title: "Travel Crew V2",
@@ -12,7 +13,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><PwaRegister />{children}</body>
     </html>
   );
 }
