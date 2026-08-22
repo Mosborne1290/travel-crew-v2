@@ -209,3 +209,81 @@ Commit to `main`. Vercel should automatically build and deploy the new version.
 10. Confirm the information is still present.
 
 Chat, Photos and Documents remain visible as Stage 3 placeholders.
+
+
+---
+
+# Stage 3 Upgrade
+
+Stage 3 adds the private collaboration layer to each trip.
+
+## New features
+
+### Realtime Trip Chat
+- One live chat room per trip
+- Supabase Realtime updates
+- Current trip members appear by profile name
+- Send messages
+- Delete your own messages
+- Messages persist in Supabase
+
+### Trip Photos
+- Upload private images to the existing `trip-photos` bucket
+- Photo records saved in `public.photos`
+- Signed URLs are used for private viewing
+- Captions
+- Delete your own photos
+- 15 MB upload limit enforced by the app and bucket
+
+### Trip Documents
+- Upload PDFs/images/Word/Excel files to `trip-documents`
+- Document category
+- Booking reference
+- Expiry date
+- Notes
+- Private signed URL opening
+- Delete your own documents
+
+### Dashboard
+- Trip Chat and Photos quick cards are now live for the next upcoming trip
+
+## Database / Supabase
+
+No new SQL installer is required if the complete Travel Crew V2 SQL installer
+was already run successfully.
+
+Stage 3 uses existing tables:
+- chat_rooms
+- chat_members
+- messages
+- photos
+- documents
+
+And existing private Storage buckets:
+- trip-photos
+- trip-documents
+
+The original SQL installer also added `messages` to the Supabase Realtime publication.
+
+## Stage 3 deployment
+
+Upload the contents of this ZIP over the existing GitHub `travel-crew-v2`
+repository and commit to `main`.
+
+Vercel should deploy automatically.
+
+## Stage 3 test
+
+1. Open a trip.
+2. Open Chat.
+3. Send a message.
+4. Refresh and confirm it remains.
+5. Open Photos and upload an image.
+6. Refresh and confirm the image remains.
+7. Open Documents and upload a PDF or image.
+8. Open the document.
+9. Log out and back in.
+10. Confirm all three features persist.
+
+For a true realtime chat test, sign in as a second trip member in another
+browser/device after that user has been added to `trip_members`.

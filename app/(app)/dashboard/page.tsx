@@ -106,16 +106,32 @@ export default async function DashboardPage() {
           <strong>Plan a Trip</strong>
           <small>Create a new itinerary</small>
         </Link>
-        <div className="quick-card">
-          <div className="quick-icon">💬</div>
-          <strong>Trip Chat</strong>
-          <small>Coming in the next build stage</small>
-        </div>
-        <div className="quick-card">
-          <div className="quick-icon">📸</div>
-          <strong>Photos</strong>
-          <small>Coming in the next build stage</small>
-        </div>
+        {upcoming ? (
+          <Link className="quick-card" href={`/trips/${upcoming.id}/chat`}>
+            <div className="quick-icon">💬</div>
+            <strong>Trip Chat</strong>
+            <small>Message your Travel Crew</small>
+          </Link>
+        ) : (
+          <div className="quick-card">
+            <div className="quick-icon">💬</div>
+            <strong>Trip Chat</strong>
+            <small>Create a trip first</small>
+          </div>
+        )}
+        {upcoming ? (
+          <Link className="quick-card" href={`/trips/${upcoming.id}/photos`}>
+            <div className="quick-icon">📸</div>
+            <strong>Photos</strong>
+            <small>Upload trip memories</small>
+          </Link>
+        ) : (
+          <div className="quick-card">
+            <div className="quick-icon">📸</div>
+            <strong>Photos</strong>
+            <small>Create a trip first</small>
+          </div>
+        )}
       </section>
 
       <section className="two-col">

@@ -264,3 +264,43 @@ button { cursor: pointer; }
 .place-copy{min-width:0}.place-copy strong{display:inline-block;margin-right:8px}.place-copy p{margin:8px 0}.text-link{color:var(--blue);font-weight:700;font-size:13px}
 @media(max-width:1000px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.planner-shell{grid-template-columns:1fr}.planner-days .day-stack{display:flex;overflow-x:auto;gap:8px}.day-card{min-width:145px}.stage-two-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}.activity-row{grid-template-columns:62px 40px minmax(0,1fr)}.activity-row .icon-danger{grid-column:3;justify-self:end}.booking-card,.place-card{grid-template-columns:42px minmax(0,1fr)}.booking-card .icon-danger,.place-card .icon-danger{grid-column:2;justify-self:end}}
+
+
+/* =========================
+   TRAVEL CREW V2 - STAGE 3
+   ========================= */
+.chat-stage3{max-width:1000px}
+.chat-panel{display:grid;gap:16px}
+.message-stream{min-height:420px;max-height:620px;overflow-y:auto;padding:8px 4px;display:grid;align-content:start;gap:14px}
+.chat-message{display:flex;gap:10px;align-items:flex-start;max-width:80%}
+.chat-message.mine{margin-left:auto;flex-direction:row-reverse}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2458dc,#25a888);color:white;display:grid;place-items:center;font-weight:800;flex:0 0 auto}
+.chat-bubble-wrap{min-width:0}
+.chat-meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin:0 4px 5px}
+.chat-message.mine .chat-meta{justify-content:flex-end}
+.chat-bubble{background:#edf2f8;border-radius:16px 16px 16px 5px;padding:11px 14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.chat-bubble.mine{background:var(--blue);color:white;border-radius:16px 16px 5px 16px}
+.chat-delete{border:0;background:transparent;color:var(--muted);font-size:11px;padding:5px 4px}
+.chat-message.mine .chat-delete{display:block;margin-left:auto}
+.chat-composer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.chat-composer textarea{width:100%;resize:vertical;min-height:54px;border:1px solid #d8dfeb;border-radius:14px;padding:12px 13px;color:var(--ink);background:white}
+
+.photo-stage3{display:grid;gap:18px}
+.photo-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.photo-tile{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden}
+.photo-tile img,.photo-placeholder{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.photo-placeholder{display:grid;place-items:center;background:linear-gradient(135deg,#dce8ff,#dbf5eb);font-size:40px}
+.photo-tile-body{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:13px}
+.photo-tile-body strong{display:block}
+.document-stack{display:grid;gap:12px}
+.document-card{display:grid;grid-template-columns:46px minmax(0,1fr) 36px;gap:13px;border:1px solid var(--line);border-radius:15px;padding:14px}
+.document-icon{width:44px;height:44px;border-radius:13px;background:#edf3ff;display:grid;place-items:center;font-size:22px}
+.document-copy{min-width:0}
+.document-copy strong{display:block;margin-bottom:5px}
+.document-meta{display:flex;flex-wrap:wrap;gap:7px 12px;color:var(--muted);font-size:12px}
+.document-copy p{margin:8px 0}
+.text-link-button{border:0;background:transparent;color:var(--blue);font-weight:800;padding:5px 0}
+
+@media(max-width:900px){.photo-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.chat-message{max-width:90%}}
+@media(max-width:700px){.photo-gallery{grid-template-columns:1fr 1fr}.chat-composer{grid-template-columns:1fr}.document-card{grid-template-columns:42px minmax(0,1fr)}.document-card .icon-danger{grid-column:2;justify-self:end}}
+@media(max-width:480px){.photo-gallery{grid-template-columns:1fr}.message-stream{min-height:360px}.chat-message{max-width:95%}}

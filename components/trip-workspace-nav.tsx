@@ -5,7 +5,15 @@ export function TripWorkspaceNav({
   active,
 }: {
   tripId: string;
-  active: "overview" | "plan" | "bookings" | "travellers" | "places";
+  active:
+    | "overview"
+    | "plan"
+    | "bookings"
+    | "travellers"
+    | "places"
+    | "chat"
+    | "photos"
+    | "documents";
 }) {
   const tabs = [
     { id: "overview", label: "Overview", href: `/trips/${tripId}` },
@@ -13,6 +21,9 @@ export function TripWorkspaceNav({
     { id: "bookings", label: "Bookings", href: `/trips/${tripId}/bookings` },
     { id: "travellers", label: "Travellers", href: `/trips/${tripId}/travellers` },
     { id: "places", label: "Saved Places", href: `/trips/${tripId}/places` },
+    { id: "chat", label: "Chat", href: `/trips/${tripId}/chat` },
+    { id: "photos", label: "Photos", href: `/trips/${tripId}/photos` },
+    { id: "documents", label: "Documents", href: `/trips/${tripId}/documents` },
   ] as const;
 
   return (
@@ -26,9 +37,6 @@ export function TripWorkspaceNav({
           {tab.label}
         </Link>
       ))}
-      <span className="workspace-tab disabled" title="Stage 3">Chat</span>
-      <span className="workspace-tab disabled" title="Stage 3">Photos</span>
-      <span className="workspace-tab disabled" title="Stage 3">Documents</span>
     </nav>
   );
 }
