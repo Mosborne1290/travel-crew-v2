@@ -1,11 +1,19 @@
 "use client";
 import { useEffect,useState } from "react";
 
-function urlBase64ToUint8Array(base64String:string){
+function urlBase64ToUint8Array(input:string){
+  const base64String=input.trim().replace(/^["']|["']$/g,"");
+  if(!/^[A-Za-z0-9_-]+$/.test(base64String)){
+    throw new Error("The VAPID public key contains invalid characters. In Vercel, save only the raw public key without quotes or labels.");
+  }
   const padding="=".repeat((4-base64String.length%4)%4);
   const base64=(base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
-  const rawData=window.atob(base64);
-  return Uint8Array.from([...rawData].map(c=>c.charCodeAt(0)));
+  try{
+    const rawData=window.atob(base64);
+    return Uint8Array.from([...rawData].map(c=>c.charCodeAt(0)));
+  }catch{
+    throw new Error("The VAPID public key is not valid Base64URL. Re-copy only the public key value and redeploy Vercel.");
+  }
 }
 
 export function PushSettings(){

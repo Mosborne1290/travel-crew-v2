@@ -4,12 +4,20 @@ import { createClient } from "@/lib/supabase/server";
 const filters:Record<string,string>={
   restaurants:'["amenity"="restaurant"]',
   cafes:'["amenity"="cafe"]',
+  bars:'["amenity"~"bar|pub"]',
   pharmacies:'["amenity"="pharmacy"]',
   supermarkets:'["shop"="supermarket"]',
+  convenience:'["shop"="convenience"]',
   hospitals:'["amenity"="hospital"]',
+  medical:'["amenity"~"clinic|doctors"]',
   toilets:'["amenity"="toilets"]',
   fuel:'["amenity"="fuel"]',
+  parking:'["amenity"="parking"]',
+  transport:'["public_transport"~"station|platform"]',
+  laundromats:'["shop"="laundry"]',
+  shopping:'["shop"~"mall|department_store|clothes|jewelry|gift"]',
   attractions:'["tourism"~"attraction|viewpoint|museum"]',
+  landmarks:'["historic"]',
 };
 
 export async function GET(request:Request){

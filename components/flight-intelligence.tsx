@@ -1,0 +1,11 @@
+"use client";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+type Flight={booking_id:string;airline:string|null;flight_number:string|null;departure_airport:string|null;arrival_airport:string|null;departure_datetime:string|null;boarding_datetime:string|null;checkin_opens_datetime:string|null;gate_departure:string|null;baggage_allowance:string|null};
+export function FlightIntelligence({tripId,flights}:{tripId:string;flights:Flight[]}){
+ const supabase=createClient();const [message,setMessage]=useState(""),[busy,setBusy]=useState(false);
+ async function create(){setBusy(true);const {data,error}=await supabase.rpc("create_flight_reminders",{p_trip_id:tripId});setMessage(error?error.message:`Flight reminder check complete. ${data??0} new reminder(s) created.`);setBusy(false)}
+ const upcoming=[...flights].filter(f=>f.departure_datetime&&new Date(f.departure_datetime)>new Date()).sort((a,b)=>String(a.departure_datetime).localeCompare(String(b.departure_datetime)));
+ return <section className="panel flight-intelligence-stage8"><div className="section-title-row"><div><h2>Flight Intelligence</h2><div className="muted">Check-in, boarding, gate, baggage and timezone details.</div></div><button className="secondary" onClick={create} disabled={busy}>{busy?"Checking…":"Create Flight Reminders"}</button></div>
+ {upcoming.length?<div className="flight-intel-list">{upcoming.map(f=><article key={f.booking_id}><div className="flight-code"><strong>{f.airline||"Flight"} {f.flight_number||""}</strong><span>{f.departure_airport||"—"} → {f.arrival_airport||"—"}</span></div><div className="flight-facts">{f.departure_datetime?<span>✈ Departs {new Date(f.departure_datetime).toLocaleString("en-AU")}</span>:null}{f.checkin_opens_datetime?<span>🧳 Check-in {new Date(f.checkin_opens_datetime).toLocaleString("en-AU")}</span>:null}{f.boarding_datetime?<span>🎫 Boarding {new Date(f.boarding_datetime).toLocaleString("en-AU")}</span>:null}{f.gate_departure?<span>🚪 Gate {f.gate_departure}</span>:null}{f.baggage_allowance?<span>⚖ {f.baggage_allowance}</span>:null}</div></article>)}</div>:<p className="muted">No upcoming flight details have been added.</p>}{message?<div className={message.includes("complete")?"success":"error"}>{message}</div>:null}</section>
+}

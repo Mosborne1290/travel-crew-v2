@@ -116,6 +116,13 @@ export function AdvancedBookings({
         terminal_arrival: String(form.get("terminal_arrival") || "").trim() || null,
         seat: String(form.get("seat") || "").trim() || null,
         cabin_class: String(form.get("cabin_class") || "").trim() || null,
+        gate_departure: String(form.get("gate_departure") || "").trim() || null,
+        gate_arrival: String(form.get("gate_arrival") || "").trim() || null,
+        boarding_datetime: form.get("boarding_datetime") ? new Date(String(form.get("boarding_datetime"))).toISOString() : null,
+        checkin_opens_datetime: form.get("checkin_opens_datetime") ? new Date(String(form.get("checkin_opens_datetime"))).toISOString() : null,
+        baggage_allowance: String(form.get("baggage_allowance") || "").trim() || null,
+        departure_timezone: String(form.get("departure_timezone") || "").trim() || null,
+        arrival_timezone: String(form.get("arrival_timezone") || "").trim() || null,
       })).error;
     }
 
@@ -224,7 +231,7 @@ export function AdvancedBookings({
               <div className="booking-icon">{b.booking_type === "flight" ? "✈️" : b.booking_type === "hotel" ? "🏨" : b.booking_type === "cruise" ? "🚢" : "🎟️"}</div>
               <div className="booking-main">
                 <div className="booking-title-row"><div><strong>{b.provider || b.booking_type}</strong><div className="muted">{b.booking_type}</div></div><span className="badge">{b.booking_status}</span></div>
-                {b.booking_type === "flight" && d ? <div className="booking-detail-grid"><span>{d.airline} {d.flight_number}</span><span>{d.departure_airport} → {d.arrival_airport}</span><span>Seat {d.seat || "TBC"}</span><span>{d.cabin_class || ""}</span></div> : null}
+                {b.booking_type === "flight" && d ? <div className="booking-detail-grid"><span>{d.airline} {d.flight_number}</span><span>{d.departure_airport} → {d.arrival_airport}</span><span>Seat {d.seat || "TBC"}{d.gate_departure?` · Gate ${d.gate_departure}`:""}</span><span>{d.cabin_class || ""}{d.baggage_allowance?` · ${d.baggage_allowance}`:""}</span>{d.boarding_datetime?<span>Boarding {new Date(d.boarding_datetime).toLocaleString("en-AU")}</span>:null}{d.checkin_opens_datetime?<span>Check-in opens {new Date(d.checkin_opens_datetime).toLocaleString("en-AU")}</span>:null}</div> : null}
                 {b.booking_type === "hotel" && d ? <div className="booking-detail-grid"><span>{d.property_name}</span><span>{d.address}</span><span>{d.room_type || "Room TBC"}</span><span>{d.contact_phone || ""}</span></div> : null}
                 {b.booking_type === "cruise" && d ? <div className="booking-detail-grid"><span>{d.cruise_line} · {d.ship_name}</span><span>{d.departure_port} → {d.arrival_port}</span><span>{d.cabin_type || "Cabin"} {d.cabin_number || ""}</span></div> : null}
                 <div className="booking-meta">
@@ -259,6 +266,15 @@ export function AdvancedBookings({
             <div className="field"><label>Arrival terminal</label><input name="terminal_arrival" /></div>
             <div className="field"><label>Seat</label><input name="seat" /></div>
             <div className="field"><label>Cabin class</label><input name="cabin_class" placeholder="Business / Premium Economy" /></div>
+            <div className="field"><label>Departure gate</label><input name="gate_departure" /></div>
+            <div className="field"><label>Arrival gate</label><input name="gate_arrival" /></div>
+            <div className="field"><label>Baggage allowance</label><input name="baggage_allowance" placeholder="2 x 32 kg" /></div>
+            <div className="field"><label>Departure timezone</label><input name="departure_timezone" placeholder="Australia/Sydney" /></div>
+            <div className="field"><label>Arrival timezone</label><input name="arrival_timezone" placeholder="America/Vancouver" /></div>
+          </div>
+          <div className="form-grid">
+            <div className="field"><label>Check-in opens</label><input name="checkin_opens_datetime" type="datetime-local" /></div>
+            <div className="field"><label>Boarding time</label><input name="boarding_datetime" type="datetime-local" /></div>
           </div>
         </> : null}
 

@@ -34,7 +34,7 @@ export function OfflineSyncManager(){
 
  useEffect(()=>{
   setOnline(navigator.onLine);read();
-  const on=()=>{setOnline(true);sync()},off=()=>setOnline(false),queue=()=>read();
+  const on=()=>{setOnline(true);sync()},off=()=>setOnline(false),queue=()=>{read();if(navigator.onLine)sync()};
   window.addEventListener("online",on);window.addEventListener("offline",off);window.addEventListener("travel-crew-offline-queue",queue);
   if(navigator.onLine)sync();
   return()=>{window.removeEventListener("online",on);window.removeEventListener("offline",off);window.removeEventListener("travel-crew-offline-queue",queue)}

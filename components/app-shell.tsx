@@ -65,6 +65,16 @@ export function AppShell({
           <Link className="nav-link" href="/settings">
             <span>⚙</span> <span className="nav-text">Settings</span>
           </Link>
+          {role === "owner" ? (
+            <>
+              <Link className="nav-link" href="/admin/users">
+                <span>🛡️</span> <span className="nav-text">Owner Admin</span>
+              </Link>
+              <Link className="nav-link" href="/admin/health">
+                <span>✓</span> <span className="nav-text">Production Check</span>
+              </Link>
+            </>
+          ) : null}
         </nav>
 
         <div className="owner-card">

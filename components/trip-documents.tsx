@@ -15,7 +15,13 @@ type DocumentRow = {
   notes: string | null;
   created_at: string;
   uploaded_by: string;
+  traveller_user_id: string | null;
+  needed_date: string | null;
+  alert_days: number;
+  document_status: string;
 };
+
+type Traveller = { user_id:string; display_name:string };
 
 function prettyBytes(value: number | null) {
   if (!value) return "";
@@ -28,10 +34,12 @@ export function TripDocuments({
   tripId,
   userId,
   initialDocuments,
+  travellers = [],
 }: {
   tripId: string;
   userId: string;
   initialDocuments: DocumentRow[];
+  travellers?: Traveller[];
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [documents, setDocuments] = useState(initialDocuments);
@@ -42,7 +50,7 @@ export function TripDocuments({
   async function refresh() {
     const { data } = await supabase
       .from("documents")
-      .select("id,document_type,name,storage_path,file_type,file_size,booking_reference,expiry_date,notes,created_at,uploaded_by")
+      .select("id,document_type,name,storage_path,file_type,file_size,booking_reference,expiry_date,notes,created_at,uploaded_by,traveller_user_id,needed_date,alert_days,document_status")
       .eq("trip_id", tripId)
       .order("created_at", { ascending: false });
 
@@ -97,6 +105,9 @@ export function TripDocuments({
       file_size: file.size,
       booking_reference: String(form.get("booking_reference") || "").trim() || null,
       expiry_date: String(form.get("expiry_date") || "") || null,
+      traveller_user_id: String(form.get("traveller_user_id") || "") || null,
+      needed_date: String(form.get("needed_date") || "") || null,
+      alert_days: Number(form.get("alert_days") || 30),
       notes: String(form.get("notes") || "").trim() || null,
     });
 
@@ -172,6 +183,8 @@ export function TripDocuments({
                     {doc.file_size ? <span>{prettyBytes(doc.file_size)}</span> : null}
                     {doc.booking_reference ? <span>Ref: {doc.booking_reference}</span> : null}
                     {doc.expiry_date ? <span>Expires: {doc.expiry_date}</span> : null}
+                    {doc.needed_date ? <span>Needed: {doc.needed_date}</span> : null}
+                    {doc.traveller_user_id ? <span>{travellers.find(t=>t.user_id===doc.traveller_user_id)?.display_name || "Traveller"}</span> : null}
                   </div>
                   {doc.notes ? <p>{doc.notes}</p> : null}
                   <button className="text-link-button" type="button" onClick={() => openDocument(doc)}>
@@ -234,8 +247,34 @@ export function TripDocuments({
         </div>
 
         <div className="field">
-          <label htmlFor="doc-expiry">Expiry date</label>
-          <input id="doc-expiry" name="expiry_date" type="date" />
+          <label htmlFor="doc-traveller">Traveller</label>
+          <select id="doc-traveller" name="traveller_user_id" defaultValue="">
+            <option value="">Shared / all travellers</option>
+            {travellers.map(t=><option key={t.user_id} value={t.user_id}>{t.display_name}</option>)}
+          </select>
+        </div>
+
+        <div className="form-grid">
+          <div className="field">
+            <label htmlFor="doc-expiry">Expiry date</label>
+            <input id="doc-expiry" name="expiry_date" type="date" />
+          </div>
+          <div className="field">
+            <label htmlFor="doc-alert">Warn me before expiry</label>
+            <select id="doc-alert" name="alert_days" defaultValue="30">
+              <option value="7">7 days</option>
+              <option value="14">14 days</option>
+              <option value="30">30 days</option>
+              <option value="60">60 days</option>
+              <option value="90">90 days</option>
+              <option value="180">180 days</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="field">
+          <label htmlFor="doc-needed">Needed on trip date</label>
+          <input id="doc-needed" name="needed_date" type="date" />
         </div>
 
         <div className="field">

@@ -1203,3 +1203,207 @@ The next polish/finalisation release can focus on:
 - activity-feed filtering
 - admin/user management and backup/export
 - deeper testing and UX polish
+
+
+---
+
+# Stage 8 — Final Major Feature Release
+
+Stage 8 turns Travel Crew from a feature-rich planner into a more complete
+private travel operating system.
+
+## Trip-wide Search
+
+Trip -> Search searches across:
+- itinerary activities
+- bookings and booking references
+- saved places
+- documents
+- expenses
+- journal entries
+- trip chat
+
+## Document Intelligence
+
+Documents now support:
+- traveller assignment
+- needed-on date
+- expiry date
+- configurable expiry warning period
+- document health dashboard
+- expired / expiring-soon indicators
+- automatic expiry reminders
+
+Use `Create Expiry Reminders` after entering document expiry dates.
+
+## Smarter Flights
+
+Flights now support:
+- departure / arrival airports
+- departure / arrival terminals
+- departure / arrival gates
+- seat
+- cabin
+- baggage allowance
+- departure / arrival timezones
+- check-in opening time
+- boarding time
+
+The Flight Intelligence panel can automatically create:
+- check-in reminders
+- boarding reminders
+- 24-hour departure reminders
+
+## Multi-mode Routing
+
+Trip -> Map now supports:
+- Walk
+- Drive
+- Cycle
+
+Travel Crew shows approximate distance, duration and route steps.
+
+These routes use public OpenStreetMap routing infrastructure and are intended
+for light personal planning use rather than guaranteed live traffic guidance.
+
+## Expanded Near Me
+
+Near Me now includes:
+- restaurants
+- cafes
+- bars / pubs
+- attractions
+- landmarks
+- shopping
+- pharmacies
+- medical centres
+- hospitals
+- supermarkets
+- convenience stores
+- public transport
+- parking
+- toilets
+- fuel
+- laundromats
+
+Inside a trip, a nearby result can be:
+- saved to Saved Places
+- added directly to Today
+
+## Deeper Offline Capture
+
+Stage 8 extends the Stage 7 offline queue.
+
+Trip -> Offline Tools can capture:
+- activities
+- saved places
+- expenses
+- reminders
+
+Stage 7 offline support remains for:
+- checklist changes
+- packing changes
+- journal entries
+
+Queued changes sync automatically when connectivity returns.
+
+## Owner User Management
+
+Owners get:
+
+Main navigation -> Owner Admin
+
+Owner controls include:
+- user list
+- last activity
+- role
+- disable account
+- re-enable account
+
+Disabled users are signed out when protected Travel Crew pages are accessed.
+
+The owner cannot disable their own signed-in owner account from this screen.
+
+## Backup / Export
+
+Every trip header now includes:
+
+`Backup Trip`
+
+This downloads a structured JSON backup containing the trip's available:
+- trip data
+- destinations
+- itinerary
+- bookings
+- flight / accommodation / cruise details
+- places
+- document metadata
+- photo metadata
+- budgets / expenses / splits / settlements
+- checklists / packing
+- reminders
+- polls
+- journal
+- activity feed
+- chat rooms / messages
+
+Private binary document/photo files are not copied into the JSON backup.
+
+## Production Readiness
+
+Owners get:
+
+Main navigation -> Production Check
+
+It verifies core database connectivity and whether important environment
+variables / Stage 8 fields are available without showing secret values.
+
+It also includes a final practical device/security test checklist.
+
+## VAPID hardening
+
+Stage 8 improves VAPID public-key parsing.
+
+If quotes or labels are accidentally pasted into Vercel, Travel Crew now gives
+a clearer setup error instead of the browser's raw `atob` decoding error.
+
+## Stage 8 Trip Navigation
+
+- Overview
+- Search
+- Today
+- Plan
+- Bookings
+- Travellers
+- Explore
+- Near Me
+- Saved Places
+- Map
+- Weather
+- Chat
+- Polls
+- Photos
+- Journal
+- Checklists
+- Offline Tools
+- Documents
+- Activity Feed
+- Important Info
+- Budget
+- Settle Up
+- Money
+
+## After Stage 8
+
+Do not add another large feature stage until the current application has been
+used and tested.
+
+The recommended next phase is:
+- bug fixing
+- iPhone / Android testing
+- UI consistency
+- accessibility
+- real-trip rehearsal
+- security/RLS review
+- backup restore procedure
+- performance tuning

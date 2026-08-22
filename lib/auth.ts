@@ -9,6 +9,21 @@ export async function requireUser() {
     redirect("/login");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_disabled")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  if (profile?.account_disabled) {
+    await supabase.auth.signOut();
+    redirect("/login?disabled=1");
+  }
+
+  await supabase.from("profiles").update({
+    email: data.user.email ?? null,
+    last_seen_at: new Date().toISOString()
+  }).eq("id", data.user.id);
   return data.user;
 }
 

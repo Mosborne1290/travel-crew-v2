@@ -1,0 +1,11 @@
+import { NextResponse } from "next/server";import { createClient } from "@/lib/supabase/server";
+export async function GET(_:Request,{params}:{params:Promise<{tripId:string}>}){const {tripId}=await params;const supabase=await createClient();const {data:auth}=await supabase.auth.getUser();if(!auth.user)return NextResponse.json({error:"Unauthorised"},{status:401});
+ const tables=["trips","trip_members","destinations","itinerary_days","activities","bookings","flights","accommodation","cruises","saved_places","documents","photos","budgets","expenses","expense_splits","expense_settlements","checklists","checklist_items","packing_items","trip_reminders","polls","journal_entries","trip_activity_feed"] as const;
+ const backup:any={version:"stage8",exported_at:new Date().toISOString(),trip_id:tripId,data:{}};
+ for(const table of tables){let query:any=supabase.from(table).select("*");if(table==="trips")query=query.eq("id",tripId);else if(["flights","accommodation","cruises","expense_splits"].includes(table as string)){continue}else query=query.eq("trip_id",tripId);const {data,error}=await query;if(!error)backup.data[table]=data??[];}
+ const bookingIds=(backup.data.bookings??[]).map((x:any)=>x.id);for(const table of ["flights","accommodation","cruises"]){if(bookingIds.length){const {data}=await supabase.from(table).select("*").in("booking_id",bookingIds);backup.data[table]=data??[]}}
+ const expenseIds=(backup.data.expenses??[]).map((x:any)=>x.id);if(expenseIds.length){const {data}=await supabase.from("expense_splits").select("*").in("expense_id",expenseIds);backup.data.expense_splits=data??[]}
+ const {data:rooms}=await supabase.from("chat_rooms").select("*").eq("trip_id",tripId);backup.data.chat_rooms=rooms??[];const roomIds=(rooms??[]).map(r=>r.id);if(roomIds.length){const {data:messages}=await supabase.from("messages").select("*").in("room_id",roomIds).order("created_at");backup.data.messages=messages??[]}
+ const tripName=backup.data.trips?.[0]?.name||"travel-crew-trip";const safe=String(tripName).replace(/[^a-z0-9_-]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+ return new NextResponse(JSON.stringify(backup,null,2),{headers:{"Content-Type":"application/json","Content-Disposition":`attachment; filename="${safe}-backup-${new Date().toISOString().slice(0,10)}.json"`,"Cache-Control":"no-store"}});
+}

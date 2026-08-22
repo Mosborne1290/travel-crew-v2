@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceNav } from "@/components/trip-workspace-nav";
+import { TripBackupButton } from "@/components/trip-backup-button";
 
 function niceDate(value: string | null) {
   if (!value) return "TBC";
@@ -18,7 +19,7 @@ export function TripWorkspaceHeader({
     | "overview" | "today" | "plan" | "bookings" | "travellers"
     | "explore" | "places" | "map" | "weather" | "chat"
     | "polls" | "photos" | "journal" | "checklists"
-    | "documents" | "important" | "activity" | "budget" | "settlements" | "money" | "assistant";
+    | "documents" | "important" | "activity" | "budget" | "settlements" | "money" | "search" | "near-me" | "offline" | "assistant";
 }) {
   return (
     <>
@@ -34,6 +35,7 @@ export function TripWorkspaceHeader({
         <div className="header-actions">
           <Link className="assistant-button" href={`/trips/${trip.id}/assistant`}>✨ Ask Travel Crew</Link>
           <Link className="ghost" href={`/trips/${trip.id}/print`} target="_blank">Export Trip</Link>
+          <TripBackupButton tripId={trip.id} />
           <span className="badge">{trip.status}</span>
         </div>
       </header>

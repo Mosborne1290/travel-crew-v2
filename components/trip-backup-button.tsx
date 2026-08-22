@@ -1,0 +1,3 @@
+"use client";
+import { useState } from "react";
+export function TripBackupButton({tripId}:{tripId:string}){const [busy,setBusy]=useState(false);async function download(){setBusy(true);try{const r=await fetch(`/api/trips/${tripId}/backup`);if(!r.ok)throw new Error("Could not create backup.");const blob=await r.blob();const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=r.headers.get("content-disposition")?.match(/filename="([^"]+)"/)?.[1]||"travel-crew-backup.json";a.click();URL.revokeObjectURL(url)}finally{setBusy(false)}}return <button className="ghost" onClick={download} disabled={busy}>{busy?"Preparing…":"Backup Trip"}</button>}

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
 import { AdvancedBookings } from "@/components/advanced-bookings";
+import { FlightIntelligence } from "@/components/flight-intelligence";
 
 export default async function BookingsPage({ params }: { params: Promise<{ tripId: string }> }) {
   const { tripId } = await params;
@@ -38,6 +39,7 @@ export default async function BookingsPage({ params }: { params: Promise<{ tripI
   return (
     <>
       <TripWorkspaceHeader trip={tripData as Trip} active="bookings" />
+      <FlightIntelligence tripId={tripId} flights={Object.values(detailMap).filter((d:any)=>d.departure_airport || d.flight_number) as any[]} />
       <AdvancedBookings tripId={tripId} userId={user.id} initialBookings={rows} initialDetails={detailMap} />
     </>
   );
