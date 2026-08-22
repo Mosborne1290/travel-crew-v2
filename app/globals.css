@@ -718,3 +718,9 @@ button { cursor: pointer; }
  .owner-invite-list article{align-items:flex-start;flex-direction:column}
  .owner-invite-actions{width:100%;justify-content:flex-end}
 }
+
+
+/* Stage 8 Hotfix 3 - Push repair diagnostics */
+.push-diagnostics{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.push-diagnostics summary{cursor:pointer;font-weight:800;color:#41516b}
+.push-diagnostics>div{display:grid;gap:4px;margin-top:8px;color:var(--muted);font-size:12px}
