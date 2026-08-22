@@ -38,9 +38,10 @@ export function SavedPlaces({
 
   async function addPlace(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMessage("");
     setBusy(true);
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const name = String(form.get("name") || "").trim();
 
     if (!name) {
@@ -62,7 +63,7 @@ export function SavedPlaces({
 
     if (error) setMessage(error.message);
     else {
-      event.currentTarget.reset();
+      formElement.reset();
       await refresh();
       setMessage("Place saved.");
     }

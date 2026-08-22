@@ -55,10 +55,11 @@ export function TripBookings({
 
   async function addBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMessage("");
     setBusy(true);
 
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const provider = String(form.get("provider") || "").trim();
     const start = String(form.get("start_datetime") || "");
     const end = String(form.get("end_datetime") || "");
@@ -87,7 +88,7 @@ export function TripBookings({
 
     if (error) setMessage(error.message);
     else {
-      event.currentTarget.reset();
+      formElement.reset();
       await refresh();
       setMessage("Booking saved.");
     }

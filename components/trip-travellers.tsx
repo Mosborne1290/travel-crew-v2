@@ -46,9 +46,10 @@ export function TripTravellers({
 
   async function createInvite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMessage("");
     setBusy(true);
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const email = String(form.get("email") || "").trim().toLowerCase();
 
     if (!email || !email.includes("@")) {
@@ -66,7 +67,7 @@ export function TripTravellers({
 
     if (error) setMessage(error.message);
     else {
-      event.currentTarget.reset();
+      formElement.reset();
       await refreshInvites();
       setMessage("Traveller invitation prepared.");
     }

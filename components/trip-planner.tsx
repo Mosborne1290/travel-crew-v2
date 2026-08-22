@@ -137,6 +137,7 @@ export function TripPlanner({
 
   async function addActivity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMessage("");
 
     if (!selectedDay) {
@@ -144,7 +145,7 @@ export function TripPlanner({
       return;
     }
 
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const title = String(form.get("title") || "").trim();
     const startTime = String(form.get("start_time") || "");
     const endTime = String(form.get("end_time") || "");
@@ -182,7 +183,7 @@ export function TripPlanner({
     if (error) {
       setMessage(error.message);
     } else {
-      event.currentTarget.reset();
+      formElement.reset();
       await refresh();
       setMessage("Activity added.");
     }
