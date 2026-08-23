@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Trip } from "@/lib/types";
 import { TripWorkspaceHeader } from "@/components/trip-workspace-header";
 import { OfflineTripButton } from "@/components/offline-trip-button";
+import { TripHeroImage } from "@/components/trip-hero-image";
 
 function niceDate(value: string | null) {
   if (!value) return "TBC";
@@ -72,6 +73,11 @@ export default async function TripDetailPage({
           </div>
         </div>
       </section>
+      <TripHeroImage
+        tripId={tripId}
+        currentUrl={trip.cover_image_url}
+        currentSource={(tripData as any).cover_image_source || null}
+      />
 
       <section className="stats-grid">
         <Link className="stat-card" href={`/trips/${tripId}/plan`}>

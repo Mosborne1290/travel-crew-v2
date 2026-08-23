@@ -36,6 +36,7 @@ export default async function OwnerUsersPage(){
   const users=(profiles??[]).map(p=>({
     id:p.id,
     display_name:p.display_name||[p.first_name,p.last_name].filter(Boolean).join(" ")||p.email||"Traveller",
+    first_name:p.first_name||null,
     email:p.email||null,
     role:(roles??[]).find(r=>r.user_id===p.id)?.role||"member",
     account_disabled:Boolean(p.account_disabled),

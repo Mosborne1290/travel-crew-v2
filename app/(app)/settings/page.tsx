@@ -1,4 +1,5 @@
 import { PushSettings } from "@/components/push-settings";
+import { ProfileNameSettings } from "@/components/profile-name-settings";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentRole, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -25,7 +26,11 @@ export default async function SettingsPage() {
 
       <section className="panel" style={{ maxWidth: 720 }}>
         <h2>Profile</h2>
-        <div className="list">
+        <ProfileNameSettings
+          initialDisplayName={profile?.display_name || profile?.first_name || ""}
+          initialFirstName={profile?.first_name || ""}
+        />
+        <div className="list" style={{ marginTop: 16 }}>
           <div className="list-row"><span>Name</span><strong>{profile?.display_name || profile?.first_name || "Traveller"}</strong></div>
           <div className="list-row"><span>Email</span><strong>{user.email}</strong></div>
           <div className="list-row"><span>Role</span><span className="badge">{role}</span></div>

@@ -724,3 +724,15 @@ button { cursor: pointer; }
 .push-diagnostics{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 .push-diagnostics summary{cursor:pointer;font-weight:800;color:#41516b}
 .push-diagnostics>div{display:grid;gap:4px;margin-top:8px;color:var(--muted);font-size:12px}
+
+/* Stage 8 Hotfix 4 - preferred names + trip hero upload */
+.profile-name-form{margin:14px 0 6px;padding:14px;background:#f8faff;border:1px solid var(--line);border-radius:14px}
+.profile-name-form small{color:var(--muted)}
+.owner-user-list-names article{grid-template-columns:44px minmax(180px,1fr) minmax(230px,.8fr) 120px 90px}
+.owner-name-edit{display:flex;gap:6px;align-items:center}
+.owner-name-edit input{min-width:0;width:100%;border:1px solid #d8dfeb;border-radius:9px;padding:8px}
+.trip-hero-upload{margin:16px 0}
+.trip-hero-editor{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(300px,1.2fr);gap:18px;align-items:center;margin-top:12px}
+.trip-hero-preview{min-height:190px;border-radius:16px;background:linear-gradient(135deg,#dfe8ff,#e7ddff);background-position:center;background-size:cover;display:grid;place-items:center;color:#60708c;font-weight:800;border:1px solid var(--line)}
+.new-trip-cover-preview{margin-top:10px;min-height:220px;border-radius:14px;background-position:center;background-size:cover;border:1px solid var(--line)}
+@media(max-width:950px){.owner-user-list-names article{grid-template-columns:44px minmax(0,1fr)}.owner-name-edit,.owner-user-list-names article select,.owner-user-list-names article>button{grid-column:2}.trip-hero-editor{grid-template-columns:1fr}}

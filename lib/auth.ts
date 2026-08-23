@@ -11,7 +11,7 @@ export async function requireUser() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("account_disabled")
+    .select("account_disabled,display_name,first_name")
     .eq("id", data.user.id)
     .maybeSingle();
 
@@ -20,10 +20,29 @@ export async function requireUser() {
     redirect("/login?disabled=1");
   }
 
+  const preferredName = profile?.display_name || profile?.first_name || null;
+
   await supabase.from("profiles").update({
     email: data.user.email ?? null,
     last_seen_at: new Date().toISOString()
   }).eq("id", data.user.id);
+
+  // Keep Supabase Auth's Display name aligned with the Travel Crew profile.
+  // This runs only when the metadata does not already match.
+  if (preferredName && (
+    data.user.user_metadata?.display_name !== preferredName ||
+    data.user.user_metadata?.full_name !== preferredName
+  )) {
+    await supabase.auth.updateUser({
+      data: {
+        display_name: preferredName,
+        name: preferredName,
+        full_name: preferredName,
+        first_name: profile?.first_name || preferredName,
+      },
+    });
+  }
+
   return data.user;
 }
 

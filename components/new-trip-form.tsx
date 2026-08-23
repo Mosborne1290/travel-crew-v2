@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -21,6 +21,8 @@ export function NewTripForm({ userId }: { userId: string }) {
   const [searching, setSearching] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   async function searchPhotos() {
     setMessage("");
@@ -52,6 +54,14 @@ export function NewTripForm({ userId }: { userId: string }) {
     } finally {
       setSearching(false);
     }
+  }
+
+  function chooseCover(event: ChangeEvent<HTMLInputElement>) {
+    const next = event.target.files?.[0] ?? null;
+    setCoverFile(next);
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setCoverPreview(next ? URL.createObjectURL(next) : null);
+    if (next) setSelected(null);
   }
 
   async function createTrip(event: FormEvent<HTMLFormElement>) {
@@ -117,6 +127,31 @@ export function NewTripForm({ userId }: { userId: string }) {
       setMessage(
         `Trip created, but organiser membership needs attention: ${memberError.message}`,
       );
+    }
+
+    // If the traveller supplied their own cover, upload it after organiser
+    // membership exists so the trip-covers RLS policy allows the upload.
+    if (!memberError && coverFile) {
+      const allowed = ["image/jpeg", "image/png", "image/webp"];
+      if (allowed.includes(coverFile.type) && coverFile.size <= 15 * 1024 * 1024) {
+        const ext = (coverFile.name.split(".").pop() || "jpg")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "") || "jpg";
+        const path = `${trip.id}/hero-${Date.now()}.${ext}`;
+        const upload = await supabase.storage
+          .from("trip-covers")
+          .upload(path, coverFile, { contentType: coverFile.type, upsert: false });
+
+        if (!upload.error) {
+          const { data: coverData } = supabase.storage.from("trip-covers").getPublicUrl(path);
+          await supabase
+            .from("trips")
+            .update({ cover_image_url: coverData.publicUrl, cover_image_source: "upload" })
+            .eq("id", trip.id);
+        } else {
+          setMessage(`Trip created, but the custom hero image could not be uploaded: ${upload.error.message}`);
+        }
+      }
     }
 
     // Create the primary destination record so itinerary/weather/map features
@@ -200,6 +235,13 @@ export function NewTripForm({ userId }: { userId: string }) {
             </div>
           </div>
         ) : null}
+
+        <div className="field span-2">
+          <label>Or upload your own trip hero image</label>
+          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseCover} />
+          <small>JPG, PNG or WebP · maximum 15 MB. Your uploaded photo takes priority over a Pexels selection.</small>
+          {coverPreview ? <div className="new-trip-cover-preview" style={{ backgroundImage: `url("${coverPreview}")` }} /> : null}
+        </div>
 
         <div className="field">
           <label htmlFor="start_date">Start date</label>
