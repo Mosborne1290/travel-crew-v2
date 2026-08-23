@@ -3,6 +3,7 @@ import { requireUser,getCurrentRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { OwnerUserManagement } from "@/components/owner-user-management";
 import { OwnerInvitations } from "@/components/owner-invitations";
+import { OwnerAllTripsAccess } from "@/components/owner-all-trips-access";
 
 export default async function OwnerUsersPage(){
   const user=await requireUser();
@@ -16,6 +17,7 @@ export default async function OwnerUsersPage(){
     {data:roles},
     {data:trips},
     {data:invites},
+    {data:allTripsAccess},
   ]=await Promise.all([
     supabase
       .from("profiles")
@@ -31,6 +33,10 @@ export default async function OwnerUsersPage(){
       .select("id,trip_id,email,role,invite_token,expires_at,accepted_at")
       .order("created_at",{ascending:false})
       .limit(100),
+    supabase
+      .from("all_trip_travellers")
+      .select("id,user_id,email,preferred_name,trip_role,include_future_trips,invite_token,expires_at,accepted_at")
+      .order("created_at",{ascending:false}),
   ]);
 
   const users=(profiles??[]).map(p=>({
@@ -59,11 +65,23 @@ export default async function OwnerUsersPage(){
     <header className="page-header">
       <div>
         <h1>Owner Administration</h1>
-        <div className="muted">Manage users, access roles and secure trip invitation links.</div>
+        <div className="muted">
+          Manage regular travellers, users, roles and invitation links.
+        </div>
       </div>
     </header>
 
+    <OwnerAllTripsAccess
+      users={users.map(u=>({id:u.id,display_name:u.display_name,email:u.email}))}
+      initialAccess={allTripsAccess??[]}
+      tripCount={tripRows.length}
+    />
+
     <OwnerInvitations trips={tripRows} initialInvites={inviteRows}/>
-    <OwnerUserManagement currentUserId={user.id} initialUsers={users}/>
+
+    <OwnerUserManagement
+      currentUserId={user.id}
+      initialUsers={users}
+    />
   </>;
 }
