@@ -49,9 +49,6 @@ export default async function CruiseDayPage({params}:{params:Promise<{tripId:str
 
   return <>
     <TripWorkspaceHeader trip={trip as Trip} active="plan"/>
-    <CruisePortDaySettings day={displayDay} canManage={Boolean(canManage)}/>
-    <CruisePortDayHeroUpload tripId={tripId} cruiseDayId={cruiseDayId} currentUrl={displayDay.hero_image_url} canManage={Boolean(canManage)}/>
-    <CruisePortDayAIBuilder tripId={tripId} cruiseDay={displayDay} canManage={Boolean(canManage)}/>
     <CruisePortDayDashboard
       initialDay={displayDay as any}
       initialActivities={(activities??[]) as any}
@@ -62,5 +59,11 @@ export default async function CruiseDayPage({params}:{params:Promise<{tripId:str
       userId={user.id}
       canManage={Boolean(canManage)}
     />
+    {canManage?<div className="cruise-admin-tools">
+      <div className="cruise-admin-tools-heading"><div className="eyebrow">Planner Controls</div><h2>Manage This Port Day</h2><p className="muted">These tools are only visible to people allowed to manage the cruise day.</p></div>
+      <CruisePortDayHeroUpload tripId={tripId} cruiseDayId={cruiseDayId} currentUrl={displayDay.hero_image_url} canManage={Boolean(canManage)}/>
+      <CruisePortDayAIBuilder tripId={tripId} cruiseDay={displayDay} canManage={Boolean(canManage)}/>
+      <CruisePortDaySettings day={displayDay} canManage={Boolean(canManage)}/>
+    </div>:null}
   </>;
 }

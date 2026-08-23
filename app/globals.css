@@ -850,3 +850,345 @@ button { cursor: pointer; }
     flex-wrap:wrap;
   }
 }
+
+
+
+/* ============================================================
+   STAGE 8 HOTFIX 10 — CRUISE PORT DAY PLANNER
+   Append to app/globals.css
+   ============================================================ */
+.plan-type-launcher{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.plan-type-launcher h2{margin:3px 0}.plan-type-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.plan-type-buttons>*{border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-weight:800}
+.plan-type-current{background:#f5f7fb}.plan-type-cruise{background:#edf3ff;color:#2458dc}
+
+.cruise-port-page-heading{margin-bottom:15px}.cruise-port-page-heading h1{margin:2px 0 4px}
+.cruise-day-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cruise-day-card{min-height:190px;border-radius:18px;padding:20px;background:linear-gradient(135deg,#2458dc,#6041ce);background-size:cover;background-position:center;color:white;display:flex;align-items:end;overflow:hidden}
+.cruise-day-card h3{font-size:27px;margin:3px 0;color:white}.cruise-day-card p,.cruise-day-card small{color:white}
+.cruise-create-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:18px;margin-top:18px}
+
+.cruise-day-settings,.cruise-hero-uploader,.cruise-ai-builder{margin-bottom:14px}
+.cruise-hero-uploader{display:flex;justify-content:space-between;gap:16px;align-items:center}
+.cruise-hero-uploader>div:first-child{display:grid}.cruise-hero-uploader span{color:var(--muted);font-size:12px}
+.critical-field{border-left:4px solid #df4d5f;padding-left:9px}
+
+.cruise-day-dashboard{display:grid;gap:16px}
+.cruise-day-hero{min-height:280px;border-radius:22px;padding:28px;background:linear-gradient(135deg,#2458dc,#6041ce);background-size:cover;background-position:center;color:white;display:flex;justify-content:space-between;align-items:end;gap:20px}
+.cruise-day-hero h1{font-size:48px;margin:4px 0;color:white}.cruise-day-hero p{font-size:18px;margin:0 0 6px}.cruise-hero-facts{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.cruise-hero-facts span{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 10px;font-size:12px}
+
+.return-ship-banner{position:sticky;top:8px;z-index:30;border-radius:18px;padding:16px 18px;display:grid;grid-template-columns:minmax(220px,.8fr) minmax(220px,1fr) auto;align-items:center;gap:16px;border:2px solid transparent;box-shadow:0 8px 24px rgba(20,34,65,.13)}
+.return-ship-banner.green{background:#e9f8f2;border-color:#a7ddcb}.return-ship-banner.amber{background:#fff8df;border-color:#eed483}.return-ship-banner.orange{background:#fff0dc;border-color:#f4ba6a}.return-ship-banner.red{background:#fff0f2;border-color:#ee9ca7}.return-ship-banner.critical{background:#ffe6ea;border-color:#dc5364}
+.return-ship-banner>div:first-child{display:grid}.return-ship-banner>div:first-child strong{font-size:28px}.return-ship-banner>div:first-child span{font-size:12px}
+.return-countdown{display:grid;text-align:center}.return-countdown small{text-transform:uppercase;font-weight:800;letter-spacing:.08em}.return-countdown b{font-size:26px}
+.return-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.return-actions button{border:0;border-radius:11px;padding:10px 12px;font-weight:900;background:#102d63;color:white}
+.return-detail{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:18px;align-items:center}.return-detail h2{margin:0}.return-detail-times{display:flex;gap:8px;flex-wrap:wrap}.return-detail-times span{display:grid;background:#f4f7fc;border-radius:10px;padding:8px 10px;font-size:12px}
+
+.cruise-weather-strip{display:flex;align-items:center;gap:14px}.cruise-weather-strip>div{display:grid}.cruise-weather-strip>b{font-size:28px;color:#2458dc}
+.cruise-day-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.45fr);gap:18px}.cruise-day-side{display:grid;gap:14px;align-content:start}
+
+.cruise-activity-list{display:grid;gap:10px}
+.cruise-activity-card{display:grid;grid-template-columns:34px 86px 46px minmax(0,1fr);gap:11px;border:1px solid var(--line);border-radius:16px;padding:14px;align-items:start}
+.cruise-activity-card.visited{background:#f1faf6;opacity:.82}.cruise-stop-number{width:30px;height:30px;border-radius:50%;background:#2458dc;color:white;display:grid;place-items:center;font-weight:900}
+.cruise-activity-time{display:grid}.cruise-activity-time span{color:var(--muted);font-size:12px}.cruise-activity-icon{width:42px;height:42px;border-radius:13px;background:#edf3ff;display:grid;place-items:center;font-size:20px}
+.cruise-activity-copy h3{margin:5px 0 3px}.cruise-activity-copy p{margin:0;color:var(--muted)}.cruise-activity-copy small{display:block;margin-top:4px;color:var(--muted)}
+.activity-badge-row{display:flex;gap:5px;flex-wrap:wrap}.priority-badge,.confirm-badge,.weather-badge{border-radius:999px;padding:4px 7px;font-size:10px;font-weight:900}.priority-badge.must{background:#fff0f2;color:#bd3043}.priority-badge.recommended{background:#edf3ff;color:#2458dc}.priority-badge.optional{background:#f2f4f7;color:#68758c}.confirm-badge{background:#fff4da;color:#98620a}.weather-badge{background:#eaf5ff;color:#256395}
+.weather-alternative{margin-top:8px;border-left:4px solid #4b86d8;background:#f3f8ff;border-radius:0 9px 9px 0;padding:8px;font-size:12px}
+.cruise-activity-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}.cruise-activity-actions a,.cruise-activity-actions button,.photo-action{border:0;background:#edf3ff;color:#2458dc;border-radius:9px;padding:7px 8px;font-size:11px;font-weight:800;cursor:pointer}.cruise-activity-actions .active{background:#e7f7f0;color:#17825f}.cruise-activity-actions .danger-link{background:#fff1f3;color:#b92b3e}.photo-action input{display:none}
+
+.info-list{display:grid}.info-list span{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.cruise-shopping{display:grid;gap:6px}.cruise-shopping label{display:flex;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px}.cruise-shopping label.done{opacity:.55;text-decoration:line-through}.cruise-shopping input{width:auto;min-height:auto}.cruise-shopping label span{display:grid}.cruise-shopping small{color:var(--muted)}
+.cruise-shopping-add{grid-template-columns:1fr 1fr auto;margin-top:10px}.cruise-expenses{display:grid}.cruise-expenses>div,.expense-total{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}.expense-total{font-size:17px}
+.cruise-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}.cruise-photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:9px}
+.cruise-day-map{min-height:300px}
+
+.cruise-ai-body{display:grid;gap:12px;margin-top:12px}.interest-chips{display:flex;gap:6px;flex-wrap:wrap}.interest-chips button{border:1px solid var(--line);background:white;border-radius:999px;padding:7px 9px}.interest-chips button.active{background:#2458dc;color:white;border-color:#2458dc}
+.ai-port-suggestions{display:grid;gap:8px}.ai-port-suggestions article{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px}.ai-port-suggestions article>div{display:grid}.ai-port-suggestions span,.ai-port-suggestions small{color:var(--muted);font-size:12px}
+
+@media(max-width:1050px){.cruise-day-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.cruise-day-layout,.cruise-create-grid{grid-template-columns:1fr}.return-ship-banner{grid-template-columns:1fr 1fr}.return-actions{grid-column:1/-1;justify-content:flex-start}.return-detail{grid-template-columns:1fr}}
+@media(max-width:700px){.plan-type-launcher,.cruise-hero-uploader,.cruise-day-hero{flex-direction:column;align-items:flex-start}.cruise-day-cards{grid-template-columns:1fr}.cruise-day-hero{min-height:220px}.cruise-day-hero h1{font-size:36px}.cruise-hero-facts{justify-content:flex-start}.return-ship-banner{top:4px;grid-template-columns:1fr;padding:13px}.return-actions{grid-column:auto}.return-countdown{text-align:left}.cruise-activity-card{grid-template-columns:30px 78px 1fr}.cruise-activity-icon{display:none}.cruise-activity-copy{grid-column:1/-1;padding-left:0}.cruise-shopping-add{grid-template-columns:1fr}.ai-port-suggestions article{align-items:flex-start;flex-direction:column}}
+
+.activity-detail-pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.activity-detail-pills span{background:#f4f7fc;border-radius:999px;padding:5px 7px;font-size:10px;color:#55657e}
+.market-details{display:grid;gap:3px;margin-top:8px;padding:9px;background:#fff8e8;border:1px solid #f0d99d;border-radius:10px;font-size:12px}
+.cruise-more-fields,.cruise-warning-settings{border:1px solid var(--line);border-radius:12px;padding:10px}.cruise-more-fields summary,.cruise-warning-settings summary{cursor:pointer;font-weight:800;color:#354865;margin-bottom:8px}
+
+
+
+/* ============================================================
+   TRAVEL CREW V2 - STAGE 8 HOTFIX 10D
+   Cruise Port Day UX Redesign
+   Append AFTER the existing Hotfix 10 Cruise Port Day CSS.
+   ============================================================ */
+
+.cruise-ux10d{display:grid;gap:22px}
+.cruise-existing-days{display:grid;gap:14px}
+.cruise-day-card-premium{
+  position:relative;
+  min-height:230px;
+  padding:18px;
+  border:0;
+  box-shadow:0 16px 35px rgba(34,55,103,.16);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.cruise-day-card-premium:hover{transform:translateY(-2px);box-shadow:0 20px 40px rgba(34,55,103,.22)}
+.cruise-card-top{display:flex;justify-content:flex-end}
+.cruise-card-type{background:rgba(255,255,255,.18);backdrop-filter:blur(7px);border:1px solid rgba(255,255,255,.25);padding:7px 10px;border-radius:999px;font-size:11px;font-weight:900}
+.cruise-card-bottom{margin-top:auto}
+.cruise-card-bottom h3{font-size:32px;letter-spacing:.01em}
+.cruise-card-bottom p{margin:2px 0 12px}
+.cruise-card-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.cruise-card-chips span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 8px;font-size:11px}
+.cruise-card-bottom>b{font-size:12px}
+
+.port-template-showcase{
+  padding:0;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:minmax(330px,.85fr) minmax(0,1.15fr);
+  border:1px solid #dce6fb;
+  box-shadow:0 14px 35px rgba(36,88,220,.08);
+}
+.port-template-visual{
+  min-height:100%;
+  padding:30px;
+  color:white;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(66,204,182,.38),transparent 34%),
+    linear-gradient(150deg,#174fc9 0%,#3955d7 44%,#6540c8 100%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.port-template-visual .template-icon{font-size:42px;margin-bottom:8px}
+.port-template-visual h1{font-size:52px;line-height:1;margin:4px 0;color:white;letter-spacing:.04em}
+.port-template-visual p{margin:0 0 4px;color:white;opacity:.9}
+.port-template-visual strong{font-size:18px}
+.template-time-strip{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:8px;margin:24px 0;padding:14px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.19);border-radius:16px}
+.template-time-strip span:not(.template-arrow){display:grid;gap:2px}
+.template-time-strip b{font-size:16px}
+.template-time-strip small{font-size:10px;opacity:.8}
+.template-arrow{opacity:.65;font-weight:900}
+.template-highlights{display:flex;flex-wrap:wrap;gap:7px}
+.template-highlights span{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:7px 9px;font-size:11px}
+
+.port-template-guided{padding:28px;display:grid;gap:16px;align-content:start}
+.template-step{display:flex;gap:11px;align-items:center;margin-top:4px}
+.step-number{width:34px;height:34px;border-radius:50%;background:#2458dc;color:white;display:grid;place-items:center;font-weight:900}
+.template-step h3{margin:0}
+.template-step p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.template-safety{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.template-safety>div{display:flex;gap:9px;align-items:center;padding:10px;border:1px solid #dce6fb;background:#f7f9ff;border-radius:12px}
+.template-safety span{display:grid}
+.template-safety small{color:var(--muted)}
+.template-attach-cta{width:100%;min-height:52px;font-size:16px}
+.what-next-card{display:grid;gap:6px;padding:14px;border-radius:14px;background:#eef9f5;border:1px solid #c8eadc;color:#315f52}
+.what-next-card strong{color:#194f42;margin-bottom:3px}
+.what-next-card span{font-size:12px}
+.manual-port-day-card{overflow:hidden}
+
+/* Live Port Day */
+.cruise-day-dashboard{gap:18px}
+.cruise-day-hero{
+  min-height:340px;
+  padding:32px;
+  border-radius:24px;
+  box-shadow:0 18px 44px rgba(17,43,100,.17);
+  overflow:hidden;
+}
+.cruise-day-hero h1{font-size:56px;text-shadow:0 2px 10px rgba(0,0,0,.28)}
+.cruise-day-hero .eyebrow{color:#dce9ff}
+.cruise-hero-facts span{backdrop-filter:blur(8px)}
+
+.cruise-day-tabs{
+  position:sticky;
+  top:8px;
+  z-index:25;
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding:8px;
+  border:1px solid #dfe6f3;
+  border-radius:14px;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(12px);
+  box-shadow:0 10px 24px rgba(28,44,82,.08);
+  scrollbar-width:none;
+}
+.cruise-day-tabs::-webkit-scrollbar{display:none}
+.cruise-day-tabs a{
+  flex:0 0 auto;
+  color:#40506a;
+  font-size:12px;
+  font-weight:800;
+  padding:8px 10px;
+  border-radius:10px;
+}
+.cruise-day-tabs a:hover{background:#edf3ff;color:#2458dc}
+
+.cruise-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+}
+.cruise-summary-grid>div{
+  padding:14px;
+  border:1px solid #dfe6f3;
+  border-radius:16px;
+  background:linear-gradient(180deg,#fff,#f8faff);
+  box-shadow:0 7px 18px rgba(42,58,92,.05);
+  display:grid;
+  gap:2px;
+}
+.cruise-summary-grid span{font-size:22px}
+.cruise-summary-grid strong{font-size:22px;color:#173b8f}
+.cruise-summary-grid small{color:var(--muted)}
+
+.return-ship-banner{
+  top:68px;
+  border-width:1px;
+  box-shadow:0 16px 34px rgba(33,47,83,.12);
+}
+.return-ship-banner>div:first-child strong{font-size:31px}
+.return-countdown b{font-size:31px}
+.return-actions button{min-height:44px;padding:10px 14px}
+
+.cruise-day-layout{align-items:start}
+.cruise-timeline-panel{padding:20px}
+.cruise-activity-list{position:relative;padding-left:8px}
+.cruise-activity-list:before{
+  content:"";
+  position:absolute;
+  left:31px;
+  top:20px;
+  bottom:20px;
+  width:2px;
+  background:linear-gradient(#b8c9f7,#dfe7fa);
+}
+.cruise-activity-card{
+  position:relative;
+  grid-template-columns:40px 90px 48px minmax(0,1fr);
+  padding:16px;
+  background:white;
+  box-shadow:0 8px 20px rgba(38,52,82,.05);
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.cruise-activity-card:hover{transform:translateY(-1px);box-shadow:0 11px 24px rgba(38,52,82,.09)}
+.cruise-stop-number{position:relative;z-index:2;cursor:grab;box-shadow:0 0 0 5px white}
+.cruise-stop-number:active{cursor:grabbing}
+.cruise-activity-time strong{font-size:17px;color:#0f234a}
+.cruise-activity-icon{background:linear-gradient(135deg,#edf4ff,#f3efff)}
+.cruise-activity-copy h3{font-size:19px}
+.cruise-activity-actions a,.cruise-activity-actions button,.photo-action{
+  min-height:38px;
+  display:inline-flex;
+  align-items:center;
+  border:1px solid #dbe5fb;
+  background:#f5f8ff;
+}
+.cruise-activity-actions .active{border-color:#c5e7d8}
+.cruise-activity-actions .danger-link{border-color:#f0c7cd}
+
+.shopping-progress{height:8px;background:#edf1f7;border-radius:999px;overflow:hidden;margin:10px 0 14px}
+.shopping-progress span{display:block;height:100%;background:linear-gradient(90deg,#2458dc,#25a57d);border-radius:999px}
+.cruise-shopping label{
+  padding:11px;
+  border-radius:12px;
+  transition:background .15s ease,border .15s ease;
+}
+.cruise-shopping label.done{background:#eef9f5;border-color:#c9e8dc;text-decoration:none}
+.cruise-shopping label.done strong{text-decoration:line-through}
+
+.port-info-card,.cruise-notes-panel,.cruise-shopping-panel,.cruise-budget-panel,.cruise-photos-panel{box-shadow:0 8px 20px rgba(38,52,82,.04)}
+.note-view-card{display:grid;gap:3px;padding:10px;margin-top:8px;background:#f8faff;border:1px solid #e0e7f4;border-radius:11px}
+.note-view-card p{margin:0;color:#52617a;font-size:12px}
+.cruise-photo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.cruise-photo-grid img{transition:transform .15s ease}
+.cruise-photo-grid img:hover{transform:scale(1.02)}
+
+.cruise-admin-tools{
+  margin-top:28px;
+  display:grid;
+  gap:14px;
+  padding-top:22px;
+  border-top:2px dashed #dce5f5;
+}
+.cruise-admin-tools-heading{padding:0 2px}
+
+/* Settings */
+.cruise-settings-10d{overflow:hidden}
+.cruise-settings-form{gap:14px}
+.settings-group{
+  border:1px solid #dfe6f3;
+  border-radius:16px;
+  padding:16px;
+  background:#fbfcff;
+}
+.settings-group-title{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.settings-group-title>span{width:36px;height:36px;border-radius:11px;background:#edf3ff;display:grid;place-items:center;font-size:18px}
+.settings-group-title h3{margin:0}
+.settings-group-title p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.settings-time-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.return-field{border-left:4px solid #f0c35b;padding-left:9px}
+.warning-settings-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.warning-setting{display:grid;grid-template-columns:1fr 75px;align-items:center;gap:6px;padding:10px;border-radius:12px}
+.warning-setting small{grid-column:2;font-size:10px}
+.warning-setting.amber{background:#fff9e7}.warning-setting.orange{background:#fff1df}.warning-setting.red{background:#fff0f2}.warning-setting.critical{background:#ffe8ec}
+.settings-save-bar{position:sticky;bottom:8px;z-index:5;display:flex;justify-content:flex-end;padding:10px;border:1px solid #dfe6f3;border-radius:14px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px)}
+.danger-zone{border:1px solid #f1c4cb;border-radius:14px;background:#fff8f9}
+.danger-zone-toggle{width:100%;text-align:left;border:0;background:transparent;padding:12px 14px;font-weight:900;color:#a62f3d}
+.danger-zone-body{display:flex;justify-content:space-between;gap:14px;align-items:center;border-top:1px solid #f1d3d8;padding:14px}
+.danger-zone-body p{margin:2px 0 0;color:var(--muted);font-size:12px}
+
+/* Cover editor */
+.cover-editor-body{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;margin-top:12px}
+.cover-preview{min-height:140px;background-size:cover;background-position:center;border-radius:14px;position:relative;overflow:hidden}
+.cover-preview span{position:absolute;left:8px;bottom:8px;background:rgba(11,26,58,.72);color:white;padding:5px 7px;border-radius:8px;font-size:10px}
+.cover-upload-actions{display:grid;align-content:center;gap:8px}
+.file-picker-button{display:inline-flex;width:max-content;align-items:center;border:1px solid #dbe5fb;background:#f5f8ff;color:#2458dc;border-radius:10px;padding:9px 11px;font-weight:800;cursor:pointer}
+.file-picker-button input{display:none}
+.cover-upload-actions>span{color:var(--muted);font-size:11px}
+
+/* AI Builder */
+.ai-step{display:flex;gap:9px;align-items:center;margin-top:5px}
+.ai-step>span{width:30px;height:30px;border-radius:50%;background:#2458dc;color:white;display:grid;place-items:center;font-weight:900}
+.ai-step>div{display:grid}
+.ai-step small{color:var(--muted)}
+.ai-build-cta{min-height:48px}
+.interest-chips button{min-height:38px}
+
+/* Mobile */
+@media(max-width:1050px){
+  .port-template-showcase{grid-template-columns:1fr}
+  .port-template-visual{min-height:360px}
+  .cruise-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .settings-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .port-template-visual{padding:22px;min-height:330px}
+  .port-template-visual h1{font-size:44px}
+  .port-template-guided{padding:20px}
+  .template-time-strip{grid-template-columns:1fr;gap:6px}
+  .template-arrow{display:none}
+  .template-safety{grid-template-columns:1fr}
+  .cruise-day-hero{min-height:280px;padding:22px}
+  .cruise-day-hero h1{font-size:42px}
+  .cruise-day-tabs{top:4px}
+  .return-ship-banner{top:64px}
+  .cruise-summary-grid{display:flex;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
+  .cruise-summary-grid::-webkit-scrollbar{display:none}
+  .cruise-summary-grid>div{min-width:135px}
+  .cruise-activity-list{padding-left:0}
+  .cruise-activity-list:before{display:none}
+  .cruise-activity-card{grid-template-columns:34px 84px 1fr;padding:13px}
+  .cruise-stop-number{box-shadow:none}
+  .cruise-activity-actions a,.cruise-activity-actions button,.photo-action{min-height:44px;padding:9px 10px}
+  .settings-time-grid,.warning-settings-grid{grid-template-columns:1fr 1fr}
+  .cover-editor-body{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .cruise-day-hero h1{font-size:36px}
+  .port-template-guided{padding:16px}
+  .cruise-day-tabs a{padding:9px 10px}
+  .settings-time-grid,.warning-settings-grid{grid-template-columns:1fr}
+  .danger-zone-body{align-items:flex-start;flex-direction:column}
+}

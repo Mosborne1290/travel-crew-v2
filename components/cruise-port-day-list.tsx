@@ -11,6 +11,17 @@ type Day={
 };
 type Template={template_key:string;title:string;port_name:string;region:string|null;country:string|null};
 
+function prettyDate(value:string){
+  return new Date(`${value}T00:00:00`).toLocaleDateString("en-AU",{
+    weekday:"long",day:"numeric",month:"long",year:"numeric"
+  });
+}
+function shortTime(value:string|null){
+  if(!value)return "TBC";
+  const [h,m]=value.slice(0,5).split(":").map(Number);
+  const suffix=h>=12?"PM":"AM";return `${h%12||12}:${String(m).padStart(2,"0")} ${suffix}`;
+}
+
 export function CruisePortDayList({
   tripId,userId,initialDays,templates,canManage,
 }:{
@@ -20,6 +31,7 @@ export function CruisePortDayList({
   const [days,setDays]=useState(initialDays);
   const [message,setMessage]=useState("");
   const [busy,setBusy]=useState(false);
+  const [showManual,setShowManual]=useState(false);
 
   async function refresh(){
     const {data}=await supabase.from("cruise_port_days")
@@ -52,8 +64,12 @@ export function CruisePortDayList({
       transport_notes:String(f.get("transport_notes")||"").trim()||null,
       notes:String(f.get("notes")||"").trim()||null,
     }).select("id").single();
+
     if(error)setMessage(error.message);
-    else{el.reset();await refresh();setMessage("Cruise Port Day created.");if(data?.id)window.location.href=`/trips/${tripId}/cruise-days/${data.id}`}
+    else{
+      el.reset();await refresh();setMessage("Cruise Port Day created.");
+      if(data?.id)window.location.href=`/trips/${tripId}/cruise-days/${data.id}`;
+    }
     setBusy(false);
   }
 
@@ -67,34 +83,124 @@ export function CruisePortDayList({
       p_wharf_name:String(f.get("wharf")||"")||null,
       p_wharf_address:String(f.get("wharf_address")||"")||null,
     });
+
     if(error)setMessage(error.message);
-    else{await refresh();setMessage("Cruise Port Day template attached.");if(data)window.location.href=`/trips/${tripId}/cruise-days/${data}`}
+    else{
+      await refresh();setMessage("Cruise Port Day template attached.");
+      if(data)window.location.href=`/trips/${tripId}/cruise-days/${data}`;
+    }
     setBusy(false);
   }
 
-  return <div className="cruise-days-list">
-    <section className="panel">
-      <div className="section-title-row"><div><h2>Cruise Port Days</h2><div className="muted">Shore-day plans with a safe return-to-ship deadline.</div></div><span className="badge">{days.length}</span></div>
-      {days.length?<div className="cruise-day-cards">{days.map(d=><Link href={`/trips/${tripId}/cruise-days/${d.id}`} key={d.id} className="cruise-day-card" style={d.hero_image_url?{backgroundImage:`linear-gradient(90deg,rgba(10,26,60,.82),rgba(10,26,60,.25)),url("${d.hero_image_url}")`}:undefined}><div><span className="eyebrow">Cruise Port Day</span><h3>{d.port_name}</h3><p>{new Date(`${d.port_date}T00:00:00`).toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</p><small>{d.cruise_ship||"Cruise ship"} · Return {d.required_return_time?.slice(0,5)||"TBC"}</small></div></Link>)}</div>:<div className="empty-mini">No cruise port days yet.</div>}
-    </section>
+  const eden=templates.find(t=>t.template_key==="eden-nsw-2026-12-19");
 
-    {canManage?<div className="cruise-create-grid">
-      <form className="panel form-stack" onSubmit={createManual}>
-        <h2>Create Cruise Port Day</h2>
+  return <div className="cruise-days-list cruise-ux10d">
+    {days.length?<section className="cruise-existing-days">
+      <div className="section-title-row">
+        <div><div className="eyebrow">Your Shore Days</div><h2>Cruise Port Days</h2><p className="muted">Open a port day to see the live itinerary, return countdown, map, shopping and spending.</p></div>
+        <span className="badge">{days.length} planned</span>
+      </div>
+      <div className="cruise-day-cards">
+        {days.map(d=><Link href={`/trips/${tripId}/cruise-days/${d.id}`} key={d.id} className="cruise-day-card cruise-day-card-premium" style={d.hero_image_url?{backgroundImage:`linear-gradient(180deg,rgba(10,24,55,.12),rgba(10,24,55,.82)),url("${d.hero_image_url}")`}:undefined}>
+          <div className="cruise-card-top"><span className="cruise-card-type">🚢 Cruise Port Day</span></div>
+          <div className="cruise-card-bottom">
+            <h3>{d.port_name}</h3>
+            <p>{prettyDate(d.port_date)}</p>
+            <div className="cruise-card-chips">
+              <span>⚓ {d.cruise_ship||"Cruise ship"}</span>
+              <span>⏰ Wharf {shortTime(d.recommended_return_time)}</span>
+              <span>🚢 Ship {shortTime(d.required_return_time)}</span>
+            </div>
+            <b>Open Port Day →</b>
+          </div>
+        </Link>)}
+      </div>
+    </section>:null}
+
+    {canManage&&eden?<section className="port-template-showcase panel">
+      <div className="port-template-visual">
+        <div className="template-icon">🚢</div>
+        <div className="eyebrow">Ready-made Cruise Port Day</div>
+        <h1>EDEN</h1>
+        <p>New South Wales, Australia</p>
+        <strong>Saturday 19 December 2026</strong>
+        <div className="template-time-strip">
+          <span><b>9:00 AM</b><small>Disembark</small></span>
+          <span className="template-arrow">→</span>
+          <span><b>2:45 PM</b><small>Back at wharf</small></span>
+          <span className="template-arrow">→</span>
+          <span><b>3:00 PM</b><small>Required return</small></span>
+        </div>
+        <div className="template-highlights">
+          <span>🗺 11 planned stops</span><span>🛍 Shopping</span><span>🏛 Museum</span>
+          <span>🌊 Beach</span><span>📸 Lookout</span><span>⚠ Return safety plan</span>
+        </div>
+      </div>
+
+      <form className="port-template-guided" onSubmit={attachTemplate}>
+        <input type="hidden" name="template_key" value={eden.template_key}/>
+        <div className="template-step">
+          <span className="step-number">1</span>
+          <div><h3>Confirm Cruise Details</h3><p>Tell Travel Crew which ship is visiting Eden.</p></div>
+        </div>
+        <div className="form-grid">
+          <div className="field"><label>Ship</label><input name="ship" defaultValue="Royal Princess" placeholder="Royal Princess"/></div>
+          <div className="field"><label>Cruise line</label><input name="line" defaultValue="Princess Cruises" placeholder="Princess Cruises"/></div>
+        </div>
+
+        <div className="template-step">
+          <span className="step-number">2</span>
+          <div><h3>Port Arrival</h3><p>Add the wharf details now, or update them later in Port Day Settings.</p></div>
+        </div>
+        <div className="form-grid">
+          <div className="field"><label>Wharf name</label><input name="wharf" placeholder="Eden Cruise Wharf"/></div>
+          <div className="field"><label>Wharf address</label><input name="wharf_address" placeholder="Wharf / Snug Cove address"/></div>
+        </div>
+
+        <div className="template-safety">
+          <div>🕘 <span><b>Disembark</b><small>9:00 AM</small></span></div>
+          <div>🛟 <span><b>Recommended wharf arrival</b><small>2:45 PM</small></span></div>
+          <div>🚢 <span><b>Required return</b><small>3:00 PM</small></span></div>
+          <div>🌐 <span><b>Timezone</b><small>Australia/Sydney</small></span></div>
+        </div>
+
+        <button className="primary template-attach-cta" disabled={busy}>
+          {busy?"Attaching Eden Plan…":"Attach Eden Plan to This Trip"}
+        </button>
+
+        <div className="what-next-card">
+          <strong>What happens next?</strong>
+          <span>✓ Adds the Eden Cruise Port Day to this trip</span>
+          <span>✓ Does not create another trip</span>
+          <span>✓ Activities can be edited afterwards</span>
+          <span>✓ All trip members can view the plan</span>
+          <span>✓ Shopping, photos and expenses stay shared</span>
+        </div>
+      </form>
+    </section>:null}
+
+    {canManage?<section className="panel manual-port-day-card">
+      <div className="section-title-row">
+        <div><div className="eyebrow">Create Your Own</div><h2>Manual Cruise Port Day</h2><p className="muted">Use this for another port when you do not have a ready-made template.</p></div>
+        <button className="secondary" onClick={()=>setShowManual(!showManual)}>{showManual?"Close":"Create Manually"}</button>
+      </div>
+
+      {showManual?<form className="form-stack" onSubmit={createManual}>
         <div className="form-grid"><div className="field"><label>Port / Destination *</label><input name="port_name" required/></div><div className="field"><label>Date *</label><input name="port_date" type="date" required/></div></div>
         <div className="form-grid"><div className="field"><label>State / Region</label><input name="region"/></div><div className="field"><label>Country</label><input name="country"/></div></div>
         <div className="field"><label>Destination timezone *</label><input name="timezone" defaultValue="Australia/Sydney" required/><small>Example: Australia/Sydney</small></div>
         <div className="form-grid"><div className="field"><label>Cruise ship</label><input name="cruise_ship"/></div><div className="field"><label>Cruise line</label><input name="cruise_line"/></div></div>
         <div className="form-grid"><div className="field"><label>Wharf / arrival point</label><input name="wharf_name"/></div><div className="field"><label>Wharf address</label><input name="wharf_address"/></div></div>
-        <div className="form-grid"><div className="field"><label>Wharf latitude</label><input name="wharf_lat" type="number" step="any"/></div><div className="field"><label>Wharf longitude</label><input name="wharf_lng" type="number" step="any"/></div></div>
-        <div className="form-grid"><div className="field"><label>Ship arrival</label><input name="ship_arrival_time" type="time"/></div><div className="field"><label>Disembark</label><input name="disembark_time" type="time"/></div><div className="field"><label>Required return</label><input name="required_return_time" type="time"/></div><div className="field"><label>Recommended wharf arrival</label><input name="recommended_return_time" type="time"/></div><div className="field"><label>Ship departure</label><input name="ship_departure_time" type="time"/></div></div>
-        <label className="inline-check"><input name="tender_port" type="checkbox"/> Tender port</label>
-        <div className="field"><label>Transport notes</label><textarea name="transport_notes"/></div><div className="field"><label>General notes</label><textarea name="notes"/></div>
+        <details className="cruise-more-fields"><summary>Advanced wharf & ship details</summary>
+          <div className="form-grid"><div className="field"><label>Wharf latitude</label><input name="wharf_lat" type="number" step="any"/></div><div className="field"><label>Wharf longitude</label><input name="wharf_lng" type="number" step="any"/></div></div>
+          <div className="form-grid"><div className="field"><label>Ship arrival</label><input name="ship_arrival_time" type="time"/></div><div className="field"><label>Disembark</label><input name="disembark_time" type="time"/></div><div className="field"><label>Recommended wharf arrival</label><input name="recommended_return_time" type="time"/></div><div className="field"><label>Required return</label><input name="required_return_time" type="time"/></div><div className="field"><label>Ship departure</label><input name="ship_departure_time" type="time"/></div></div>
+          <label className="inline-check"><input name="tender_port" type="checkbox"/> Tender port</label>
+          <div className="field"><label>Transport notes</label><textarea name="transport_notes"/></div><div className="field"><label>General notes</label><textarea name="notes"/></div>
+        </details>
         <button className="primary" disabled={busy}>{busy?"Creating…":"Create Port Day"}</button>
-      </form>
+      </form>:null}
+    </section>:null}
 
-      {templates.length?<form className="panel form-stack" onSubmit={attachTemplate}><h2>Use a Port Day Template</h2><div className="field"><label>Template</label><select name="template_key">{templates.map(t=><option value={t.template_key} key={t.template_key}>{t.title}</option>)}</select></div><div className="field"><label>Ship</label><input name="ship" placeholder="Royal Princess"/></div><div className="field"><label>Cruise line</label><input name="line"/></div><div className="field"><label>Wharf name</label><input name="wharf"/></div><div className="field"><label>Wharf address</label><input name="wharf_address"/></div><button className="secondary" disabled={busy}>Attach Template to This Trip</button><p className="muted">The Eden 19 December 2026 itinerary is included as a draft template so it will not create a duplicate trip.</p></form>:null}
-    </div>:null}
     {message?<div className={message.includes("created")||message.includes("attached")?"success":"error"}>{message}</div>:null}
   </div>
 }

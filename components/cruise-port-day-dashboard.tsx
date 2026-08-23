@@ -97,6 +97,10 @@ export function CruisePortDayDashboard({
   const critical=day.warning_critical_minutes??15,red=day.warning_red_minutes??30,orange=day.warning_orange_minutes??60,amber=day.warning_amber_minutes??90;
   const warning=mins==null?"green":mins<=critical?"critical":mins<=red?"red":mins<=orange?"orange":mins<=amber?"amber":"green";
   const countdown=remain==null?"Return time TBC":remain<=0?"RETURN TIME REACHED":`${Math.max(0,Math.floor(remain/3600000))} hrs ${Math.max(0,Math.floor((remain%3600000)/60000))} mins`;
+  const purchasedCount=shopping.filter(i=>i.purchased).length;
+  const spendTotal=expenses.reduce((sum,e)=>sum+Number(e.amount||0),0);
+  const photoCount=photos.length;
+  const visitedCount=activities.filter(a=>a.visited).length;
 
   const mapPoints=[
     ...(day.wharf_lat!=null&&day.wharf_lng!=null?[{
@@ -240,7 +244,25 @@ export function CruisePortDayDashboard({
       <div className="cruise-hero-facts"><span>🌐 {day.timezone}</span>{day.tender_port?<span>🛥 Tender port</span>:null}{weather?<span>☀️ {weather.temperature_max}° / {weather.temperature_min}°</span>:null}</div>
     </section>
 
-    <section className={`return-ship-banner ${warning}`}>
+    <nav className="cruise-day-tabs" aria-label="Cruise Port Day sections">
+      <a href="#cruise-overview">Overview</a>
+      <a href="#cruise-itinerary">Itinerary</a>
+      <a href="#cruise-map">Map</a>
+      <a href="#cruise-shopping">Shopping</a>
+      <a href="#cruise-photos">Photos</a>
+      <a href="#cruise-budget">Budget</a>
+      <a href="#cruise-notes">Notes</a>
+    </nav>
+
+    <section className="cruise-summary-grid" aria-label="Cruise day summary">
+      <div><span>🗺</span><strong>{activities.length}</strong><small>Planned Stops</small></div>
+      <div><span>✓</span><strong>{visitedCount}/{activities.length}</strong><small>Visited</small></div>
+      <div><span>🛍</span><strong>{purchasedCount}/{shopping.length}</strong><small>Shopping</small></div>
+      <div><span>💰</span><strong>${spendTotal.toFixed(2)}</strong><small>Spent Today</small></div>
+      <div><span>📸</span><strong>{photoCount}</strong><small>Photos</small></div>
+    </section>
+
+    <section id="cruise-overview" className={`return-ship-banner ${warning}`}>
       <div><div className="eyebrow">🚢 RETURN TO SHIP</div><strong>{prettyTime(day.required_return_time)}</strong><span>Recommended wharf arrival: {prettyTime(day.recommended_return_time)}</span></div>
       <div className="return-countdown"><small>Time remaining</small><b>{countdown}</b></div>
       <div className="return-actions"><button onClick={()=>showReturn?setShowReturn(false):openReturnPanel()}>🚢 RETURN TO SHIP</button>{canManage?<button onClick={createReturnReminders}>Create Reminders</button>:null}</div>
@@ -252,7 +274,7 @@ export function CruisePortDayDashboard({
 
     <div className="cruise-day-layout">
       <main className="cruise-timeline">
-        <section className="panel"><div className="section-title-row"><div><h2>Today’s Timeline</h2><div className="muted">{activities.length} planned stops · times shown in {day.timezone}</div></div>{canManage?<button className="secondary compact" onClick={mapMissingStops} disabled={busy}>Map Missing Stops</button>:null}</div>
+        <section id="cruise-itinerary" className="panel cruise-timeline-panel"><div className="section-title-row"><div><div className="eyebrow">Today’s Plan</div><h2>Itinerary Timeline</h2><div className="muted">{activities.length} planned stops · times shown in {day.timezone}</div></div>{canManage?<button className="secondary compact" onClick={mapMissingStops} disabled={busy}>Find Missing Map Locations</button>:null}</div>
           <div className="cruise-activity-list">{activities.map((a,index)=><article className={`cruise-activity-card ${a.visited?"visited":""}`} key={a.id}
             draggable={canManage}
             onDragStart={()=>setDraggedId(a.id)}
@@ -284,7 +306,7 @@ export function CruisePortDayDashboard({
           </article>)}</div>
         </section>
 
-        {canManage?<form className="panel form-stack" onSubmit={addActivity}><h2>Add Activity</h2><div className="form-grid"><div className="field"><label>Activity *</label><input name="title" required/></div><div className="field"><label>Category</label><select name="category">{["Cruise Wharf","Attraction","Shopping","Market","Food","Cafe","Restaurant","Museum","Beach","Lookout","Walk","Tour","Transport","Historic Site","Nature","Photography","Other"].map(c=><option key={c}>{c}</option>)}</select></div></div><div className="form-grid"><div className="field"><label>Start</label><input name="start" type="time"/></div><div className="field"><label>End</label><input name="end" type="time"/></div><div className="field"><label>Priority</label><select name="priority"><option>Must Do</option><option>Recommended</option><option>Optional</option></select></div></div><div className="field"><label>Address</label><input name="address"/></div>
+        {canManage?<form className="panel form-stack cruise-add-activity" onSubmit={addActivity}><div className="eyebrow">Planner Tools</div><h2>+ Add Activity</h2><div className="form-grid"><div className="field"><label>Activity *</label><input name="title" required/></div><div className="field"><label>Category</label><select name="category">{["Cruise Wharf","Attraction","Shopping","Market","Food","Cafe","Restaurant","Museum","Beach","Lookout","Walk","Tour","Transport","Historic Site","Nature","Photography","Other"].map(c=><option key={c}>{c}</option>)}</select></div></div><div className="form-grid"><div className="field"><label>Start</label><input name="start" type="time"/></div><div className="field"><label>End</label><input name="end" type="time"/></div><div className="field"><label>Priority</label><select name="priority"><option>Must Do</option><option>Recommended</option><option>Optional</option></select></div></div><div className="field"><label>Address</label><input name="address"/></div>
         <details className="cruise-more-fields"><summary>More activity details</summary>
           <div className="form-grid"><div className="field"><label>Website</label><input name="website" type="url"/></div><div className="field"><label>Phone</label><input name="phone"/></div></div>
           <div className="form-grid"><div className="field"><label>Booking reference</label><input name="booking_reference"/></div><div className="field"><label>Estimated cost</label><input name="estimated_cost" type="number" step="0.01"/></div><div className="field"><label>Currency</label><input name="currency" defaultValue="AUD"/></div></div>
@@ -298,9 +320,12 @@ export function CruisePortDayDashboard({
       </main>
 
       <aside className="cruise-day-side">
-        <section className="panel"><h2>Port Information</h2><div className="info-list"><span><b>Wharf</b>{day.wharf_name||"TBC"}</span><span><b>Disembark</b>{prettyTime(day.disembark_time)}</span><span><b>Return</b>{prettyTime(day.required_return_time)}</span><span><b>Departure</b>{prettyTime(day.ship_departure_time)}</span></div>{day.transport_notes?<p>{day.transport_notes}</p>:null}</section>
+        <section className="panel port-info-card"><div className="eyebrow">At a Glance</div><h2>Port Information</h2><div className="info-list"><span><b>Wharf</b>{day.wharf_name||"TBC"}</span><span><b>Disembark</b>{prettyTime(day.disembark_time)}</span><span><b>Wharf target</b>{prettyTime(day.recommended_return_time)}</span><span><b>Ship return</b>{prettyTime(day.required_return_time)}</span><span><b>Departure</b>{prettyTime(day.ship_departure_time)}</span></div></section>
+        <section id="cruise-notes" className="panel cruise-notes-panel"><div className="eyebrow">Useful Information</div><h2>Port Day Notes</h2>{day.transport_notes?<div className="note-view-card"><strong>🚐 Transport</strong><p>{day.transport_notes}</p></div>:null}{day.notes?<div className="note-view-card"><strong>📝 General Notes</strong><p>{day.notes}</p></div>:null}{!day.transport_notes&&!day.notes?<p className="muted">No port-day notes have been added yet.</p>:null}</section>
 
-        <section className="panel"><div className="section-title-row"><h2>Shopping List</h2><span className="badge">{shopping.filter(i=>i.purchased).length}/{shopping.length}</span></div><div className="cruise-shopping">{shopping.map(i=><label className={i.purchased?"done":""} key={i.id}><input type="checkbox" checked={i.purchased} onChange={()=>toggleShopping(i)}/><span><strong>{i.item_name}</strong><small>{i.suggested_location||i.category||"Shopping"}{i.budget?` · Budget ${i.currency} $${i.budget}`:""}{i.actual_cost!=null?` · Paid $${Number(i.actual_cost).toFixed(2)}`:""}</small></span></label>)}</div><form className="form-stack cruise-shopping-add" onSubmit={addShopping}>
+        <section id="cruise-shopping" className="panel cruise-shopping-panel"><div className="section-title-row"><div><div className="eyebrow">Souvenirs & Gifts</div><h2>Shopping List</h2></div><span className="badge">{purchasedCount}/{shopping.length} purchased</span></div>
+        <div className="shopping-progress"><span style={{width:`${shopping.length?Math.round((purchasedCount/shopping.length)*100):0}%`}}/></div>
+        <div className="cruise-shopping">{shopping.map(i=><label className={i.purchased?"done":""} key={i.id}><input type="checkbox" checked={i.purchased} onChange={()=>toggleShopping(i)}/><span><strong>{i.item_name}</strong><small>{i.suggested_location||i.category||"Shopping"}{i.budget?` · Budget ${i.currency} $${i.budget}`:""}{i.actual_cost!=null?` · Paid $${Number(i.actual_cost).toFixed(2)}`:""}</small></span></label>)}</div><form className="form-stack cruise-shopping-add" onSubmit={addShopping}>
           <input name="item" required placeholder="Shopping item"/>
           <input name="location" placeholder="Suggested shop / location"/>
           <div className="form-grid"><input name="category" placeholder="Category" defaultValue="Souvenir"/><input name="budget" type="number" step="0.01" placeholder="Budget"/><input name="currency" defaultValue="AUD"/></div>
@@ -308,13 +333,13 @@ export function CruisePortDayDashboard({
           <button className="secondary">Add Shopping Item</button>
         </form></section>
 
-        <section className="panel"><div className="section-title-row"><h2>Expenses</h2><button className="secondary compact" onClick={()=>addExpense()}>+ Expense</button></div><div className="cruise-expenses">{expenses.slice(0,8).map(e=><div key={e.id}><span>{e.description}</span><strong>{e.currency} ${Number(e.amount).toFixed(2)}</strong></div>)}</div><div className="expense-total"><span>Port day total</span><strong>${expenses.reduce((s,e)=>s+Number(e.amount),0).toFixed(2)}</strong></div><Link className="text-link" href={`/trips/${day.trip_id}/budget`}>Open trip budget →</Link></section>
+        <section id="cruise-budget" className="panel cruise-budget-panel"><div className="section-title-row"><div><div className="eyebrow">Today’s Spending</div><h2>Port Day Budget</h2></div><button className="secondary compact" onClick={()=>addExpense()}>+ Expense</button></div><div className="cruise-expenses">{expenses.slice(0,8).map(e=><div key={e.id}><span>{e.description}</span><strong>{e.currency} ${Number(e.amount).toFixed(2)}</strong></div>)}</div><div className="expense-total"><span>Port day total</span><strong>${expenses.reduce((s,e)=>s+Number(e.amount),0).toFixed(2)}</strong></div><Link className="text-link" href={`/trips/${day.trip_id}/budget`}>Open trip budget →</Link></section>
 
-        <section className="panel"><h2>Photos</h2><div className="cruise-photo-grid">{photos.slice(0,6).map(p=>signedUrls[p.id]?<img src={signedUrls[p.id]} alt={p.caption||"Cruise day photo"} key={p.id}/>:null)}</div><Link className="text-link" href={`/trips/${day.trip_id}/photos`}>View all trip photos →</Link></section>
+        <section id="cruise-photos" className="panel cruise-photos-panel"><div className="section-title-row"><div><div className="eyebrow">Memories</div><h2>Port Day Photos</h2></div><span className="badge">{photoCount}</span></div><div className="cruise-photo-grid">{photos.slice(0,6).map(p=>signedUrls[p.id]?<img src={signedUrls[p.id]} alt={p.caption||"Cruise day photo"} key={p.id}/>:null)}</div><Link className="text-link" href={`/trips/${day.trip_id}/photos`}>View all trip photos →</Link></section>
       </aside>
     </div>
 
-    <section className="panel cruise-day-map"><div className="section-title-row"><div><h2>Port Day Map</h2><div className="muted">Wharf and mapped itinerary stops in plan order.</div></div></div>{mapPoints.length?<TripMap points={mapPoints as any}/>:<div className="empty-mini">Add wharf/activity coordinates to display the map.</div>}</section>
+    <section id="cruise-map" className="panel cruise-day-map"><div className="section-title-row"><div><h2>Port Day Map</h2><div className="muted">Wharf and mapped itinerary stops in plan order.</div></div></div>{mapPoints.length?<TripMap points={mapPoints as any}/>:<div className="empty-mini">Add wharf/activity coordinates to display the map.</div>}</section>
     {message?<div className={message.includes("added")||message.includes("created")?"success":"error"}>{message}</div>:null}
   </div>;
 }
