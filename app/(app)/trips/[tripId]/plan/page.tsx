@@ -14,7 +14,7 @@ export default async function TripPlanPage({ params }: { params: Promise<{ tripI
   const [{data:tripData},{data:days},{data:activities},{data:destination}] = await Promise.all([
     supabase.from("trips").select("*").eq("id",tripId).maybeSingle(),
     supabase.from("itinerary_days").select("id,date,day_number,title,notes").eq("trip_id",tripId).order("date"),
-    supabase.from("activities").select("id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude").eq("trip_id",tripId).order("sort_order"),
+    supabase.from("activities").select("id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude,timezone,time_storage_version").eq("trip_id",tripId).order("sort_order"),
     supabase.from("destinations").select("id,name,latitude,longitude,timezone").eq("trip_id",tripId).order("sort_order").limit(1).maybeSingle(),
   ]);
   if(!tripData) notFound();

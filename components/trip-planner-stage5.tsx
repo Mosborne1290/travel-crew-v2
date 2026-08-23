@@ -9,6 +9,7 @@ type Activity = {
   start_datetime:string|null; end_datetime:string|null; venue_name:string|null;
   address:string|null; notes:string|null; cost:number|null; currency:string|null;
   status:string; sort_order:number; latitude:number|null; longitude:number|null;
+  timezone:string|null; time_storage_version:number;
 };
 type Destination = { id:string; name:string; latitude:number|null; longitude:number|null; timezone:string|null };
 
@@ -19,9 +20,20 @@ type ForecastDay = {
 function formatDay(date:string) {
   return new Intl.DateTimeFormat("en-AU",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(`${date}T00:00:00Z`));
 }
-function localTime(value:string|null) {
+function localTime(value:string|null,timeZone:string) {
   if (!value) return "";
-  return new Intl.DateTimeFormat("en-AU",{hour:"numeric",minute:"2-digit"}).format(new Date(value));
+  return new Intl.DateTimeFormat("en-AU",{
+    hour:"numeric",minute:"2-digit",timeZone
+  }).format(new Date(value));
+}
+function timeInputValue(value:string|null,timeZone:string) {
+  if (!value) return "";
+  const parts=new Intl.DateTimeFormat("en-GB",{
+    hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone
+  }).formatToParts(new Date(value));
+  const hour=parts.find(p=>p.type==="hour")?.value||"00";
+  const minute=parts.find(p=>p.type==="minute")?.value||"00";
+  return `${hour}:${minute}`;
 }
 function icon(type:string) {
   return type==="flight"?"✈️":type==="hotel"?"🏨":type==="cruise"?"🚢":type==="restaurant"?"🍽️":type==="tour"?"🎟️":type==="transport"?"🚕":type==="shopping"?"🛍️":type==="free_time"?"🕒":"📍";
@@ -54,6 +66,7 @@ export function TripPlannerStage5({
   const [activityDate,setActivityDate]=useState(initialDays[0]?.date ?? tripStart ?? "");
 
   const selectedDay=days.find(d=>d.id===selectedDayId) ?? days[0] ?? null;
+  const tripTimezone=destination?.timezone || "Australia/Sydney";
   const dayActivities=(dayId:string)=>activities.filter(a=>a.itinerary_day_id===dayId).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0)||String(a.start_datetime||"").localeCompare(String(b.start_datetime||"")));
 
   useEffect(()=>{
@@ -75,7 +88,7 @@ export function TripPlannerStage5({
   async function refresh(){
     const [{data:d},{data:a}]=await Promise.all([
       supabase.from("itinerary_days").select("id,date,day_number,title,notes").eq("trip_id",tripId).order("date"),
-      supabase.from("activities").select("id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude").eq("trip_id",tripId).order("sort_order"),
+      supabase.from("activities").select("id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude,timezone,time_storage_version").eq("trip_id",tripId).order("sort_order"),
     ]);
     const nextDays=(d??[]) as Day[];
     setDays(nextDays);
@@ -131,6 +144,7 @@ export function TripPlannerStage5({
           itinerary_day_id: selectedDay?.id || "",
           day_date: activityDate,
           destination_name: destination?.name || "",
+          timezone: tripTimezone,
           title: String(f.get("title") || "").trim(),
           activity_type: String(f.get("activity_type") || "other"),
           venue_name: String(f.get("venue_name") || "").trim(),
@@ -191,6 +205,7 @@ export function TripPlannerStage5({
           activity_id: editing.id,
           itinerary_day_id: targetDay.id,
           destination_name: destination?.name || "",
+          timezone: tripTimezone,
           title: String(f.get("title") || "").trim(),
           activity_type: String(f.get("activity_type") || "other"),
           venue_name: String(f.get("venue_name") || "").trim(),
@@ -222,6 +237,36 @@ export function TripPlannerStage5({
     }
   }
 
+
+  async function repairExistingTimes(){
+    const legacy=activities.filter(a=>a.time_storage_version===1);
+    if(!legacy.length){
+      setMessage("No legacy activity times need repair.");
+      return;
+    }
+
+    if(!confirm(
+      `Repair ${legacy.length} existing activity time${legacy.length===1?"":"s"} saved by the old UTC bug?\n\nBooking-created activities will be left unchanged. Run this once after installing the timezone fix.`
+    ))return;
+
+    setBusy(true);
+    setMessage("");
+
+    try{
+      const response=await fetch(`/api/trips/${tripId}/activities/repair-times`,{
+        method:"POST"
+      });
+      const payload=await response.json();
+      if(!response.ok)throw new Error(payload.error||"Could not repair existing times.");
+      await refresh();
+      setMessage(`Time repair complete. ${payload.repaired} activit${payload.repaired===1?"y":"ies"} corrected; ${payload.skipped} booking/unsupported item${payload.skipped===1?"":"s"} left unchanged.`);
+    }catch(error){
+      setMessage(error instanceof Error?error.message:"Could not repair existing times.");
+    }finally{
+      setBusy(false);
+    }
+  }
+
   async function remove(id:string){
     if(!confirm("Delete this activity?"))return;
     const {error}=await supabase.from("activities").delete().eq("id",id);
@@ -236,7 +281,7 @@ export function TripPlannerStage5({
 
   async function share(a:Activity){
     const {error}=await supabase.rpc("share_trip_item_to_chat",{
-      p_trip_id:tripId,p_message_text:`${icon(a.activity_type)} ${a.title}${a.venue_name?` · ${a.venue_name}`:""}${a.start_datetime?` · ${localTime(a.start_datetime)}`:""}`,
+      p_trip_id:tripId,p_message_text:`${icon(a.activity_type)} ${a.title}${a.venue_name?` · ${a.venue_name}`:""}${a.start_datetime?` · ${localTime(a.start_datetime,a.timezone||tripTimezone)}`:""}`,
       p_message_type:"activity",
     });
     setMessage(error?error.message:"Activity shared to trip chat.");
@@ -267,7 +312,7 @@ export function TripPlannerStage5({
       onDrop={()=>{if(dragId)reorder(dragId,a.id);setDragId(null)}}
     >
       <div className="drag-handle">⋮⋮</div>
-      <div className="activity-time">{localTime(a.start_datetime)||"Any time"}</div>
+      <div className="activity-time">{localTime(a.start_datetime,a.timezone||tripTimezone)||"Any time"}</div>
       <div className="activity-symbol">{icon(a.activity_type)}</div>
       <div className="activity-copy">
         <strong>{a.title}</strong>
@@ -290,7 +335,10 @@ export function TripPlannerStage5({
         <button className={view==="calendar"?"active":""} onClick={()=>setView("calendar")}>Calendar</button>
         <button className={view==="full"?"active":""} onClick={()=>setView("full")}>Full Trip</button>
       </div>
-      <div className="muted">Drag activities to reorder them within a day.</div>
+      <div className="planner-time-tools">
+        <div className="muted">Times are shown in {tripTimezone}. Drag activities to reorder them within a day.</div>
+        {activities.some(a=>a.time_storage_version===1)?<button className="secondary compact" type="button" onClick={repairExistingTimes} disabled={busy}>Repair Existing Times</button>:null}
+      </div>
     </div>
 
     {view==="day"?<div className="planner-shell">
@@ -332,7 +380,7 @@ export function TripPlannerStage5({
     {view==="calendar"?<section className="calendar-stage5">
       {days.map(d=>{const w=weatherFor(d.date);return <article className="calendar-day-card" key={d.id}>
         <header><div><strong>Day {d.day_number}</strong><span>{formatDay(d.date)}</span></div>{w?<span>{weatherEmoji(w.code)} {Math.round(w.max)}°</span>:null}</header>
-        <div>{dayActivities(d.id).map(a=><button key={a.id} onClick={()=>{setSelectedDayId(d.id);setEditing(a)}}><span>{localTime(a.start_datetime)||"—"}</span>{icon(a.activity_type)} {a.title}</button>)}</div>
+        <div>{dayActivities(d.id).map(a=><button key={a.id} onClick={()=>{setSelectedDayId(d.id);setEditing(a)}}><span>{localTime(a.start_datetime,a.timezone||tripTimezone)||"—"}</span>{icon(a.activity_type)} {a.title}</button>)}</div>
       </article>})}
     </section>:null}
 
@@ -348,8 +396,8 @@ export function TripPlannerStage5({
       <div className="form-grid">
         <div className="field"><label>Type</label><select name="activity_type" defaultValue={editing.activity_type}><option value="attraction">Attraction</option><option value="restaurant">Restaurant</option><option value="tour">Tour</option><option value="transport">Transport</option><option value="shopping">Shopping</option><option value="free_time">Free Time</option><option value="flight">Flight</option><option value="hotel">Hotel</option><option value="cruise">Cruise</option><option value="other">Other</option></select></div>
         <div className="field"><label>Venue</label><input name="venue_name" defaultValue={editing.venue_name||""}/></div>
-        <div className="field"><label>Start</label><input name="start_time" type="time" defaultValue={editing.start_datetime?new Date(editing.start_datetime).toTimeString().slice(0,5):""}/></div>
-        <div className="field"><label>End</label><input name="end_time" type="time" defaultValue={editing.end_datetime?new Date(editing.end_datetime).toTimeString().slice(0,5):""}/></div>
+        <div className="field"><label>Start</label><input name="start_time" type="time" defaultValue={editing.start_datetime?timeInputValue(editing.start_datetime,editing.timezone||tripTimezone):""}/></div>
+        <div className="field"><label>End</label><input name="end_time" type="time" defaultValue={editing.end_datetime?timeInputValue(editing.end_datetime,editing.timezone||tripTimezone):""}/></div>
       </div>
       <div className="field"><label>Address</label><input name="address" defaultValue={editing.address||""}/></div>
       <div className="field"><label>Cost AUD</label><input name="cost" type="number" min="0" step="0.01" defaultValue={editing.cost??""}/></div>

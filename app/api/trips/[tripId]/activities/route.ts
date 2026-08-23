@@ -19,6 +19,7 @@ async function findCoordinates(query: string) {
       ? {
           latitude: Number(match.latitude),
           longitude: Number(match.longitude),
+          timezone: typeof match.timezone === "string" ? match.timezone : null,
         }
       : null;
   } catch {
@@ -29,6 +30,70 @@ async function findCoordinates(query: string) {
 
 function validTime(value: unknown) {
   return typeof value === "string" && /^\d{2}:\d{2}$/.test(value);
+}
+
+function safeTimeZone(value: unknown) {
+  const candidate = String(value || "").trim() || "Australia/Sydney";
+  try {
+    new Intl.DateTimeFormat("en-AU", { timeZone: candidate }).format(new Date());
+    return candidate;
+  } catch {
+    return "Australia/Sydney";
+  }
+}
+
+function timeZoneOffsetMs(instantMs: number, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(instantMs));
+
+  const values: Record<string, number> = {};
+  for (const part of parts) {
+    if (part.type !== "literal") values[part.type] = Number(part.value);
+  }
+
+  const asUtc = Date.UTC(
+    values.year,
+    values.month - 1,
+    values.day,
+    values.hour,
+    values.minute,
+    values.second,
+  );
+
+  return asUtc - instantMs;
+}
+
+function localWallTimeToUtcIso(date: string, time: string, timeZone: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  const [hour, minute] = time.split(":").map(Number);
+
+  if (![year, month, day, hour, minute].every(Number.isFinite)) {
+    throw new Error("Invalid local date/time.");
+  }
+
+  const wallClockAsUtc = Date.UTC(year, month - 1, day, hour, minute, 0);
+  let candidate = wallClockAsUtc;
+
+  // Two passes handle DST-offset changes around the requested instant.
+  for (let i = 0; i < 2; i += 1) {
+    const offset = timeZoneOffsetMs(candidate, timeZone);
+    candidate = wallClockAsUtc - offset;
+  }
+
+  return new Date(candidate).toISOString();
+}
+
+function utcClockAsTime(value: string) {
+  const d = new Date(value);
+  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
 }
 
 export async function POST(
@@ -52,6 +117,7 @@ export async function POST(
   const venue = String(body.venue_name || "").trim();
   const address = String(body.address || "").trim();
   const destinationName = String(body.destination_name || "").trim();
+  const requestedTimeZone = safeTimeZone(body.timezone);
 
   if (!title) {
     return NextResponse.json({ error: "Activity name is required." }, { status: 400 });
@@ -153,13 +219,15 @@ export async function POST(
   let startDatetime: string | null = null;
   let endDatetime: string | null = null;
 
+  const activityTimeZone = safeTimeZone(coordinates?.timezone || requestedTimeZone);
+
   try {
     startDatetime = validTime(startTime)
-      ? new Date(`${day.date}T${startTime}:00`).toISOString()
+      ? localWallTimeToUtcIso(day.date, startTime, activityTimeZone)
       : null;
 
     endDatetime = validTime(endTime)
-      ? new Date(`${day.date}T${endTime}:00`).toISOString()
+      ? localWallTimeToUtcIso(day.date, endTime, activityTimeZone)
       : null;
   } catch {
     return NextResponse.json({ error: "The activity time is invalid." }, { status: 400 });
@@ -180,7 +248,7 @@ export async function POST(
     .from("activities")
     .insert({
       trip_id: tripId,
-      itinerary_day_id: dayId,
+      itinerary_day_id: day.id,
       created_by: auth.user.id,
       title,
       activity_type: String(body.activity_type || "other"),
@@ -198,9 +266,11 @@ export async function POST(
       sort_order: count ?? 0,
       latitude: coordinates?.latitude ?? null,
       longitude: coordinates?.longitude ?? null,
+      timezone: activityTimeZone,
+      time_storage_version: 2,
     })
     .select(
-      "id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude",
+      "id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude,timezone,time_storage_version",
     )
     .single();
 
@@ -259,6 +329,7 @@ export async function PATCH(
   const venue = String(body.venue_name || "").trim();
   const address = String(body.address || "").trim();
   const destinationName = String(body.destination_name || "").trim();
+  const requestedTimeZone = safeTimeZone(body.timezone);
 
   const coordinates = await findCoordinates(
     address ||
@@ -266,11 +337,12 @@ export async function PATCH(
       [title, destinationName].filter(Boolean).join(" "),
   );
 
+  const activityTimeZone = safeTimeZone(coordinates?.timezone || requestedTimeZone);
   const startDatetime = validTime(startTime)
-    ? new Date(`${day.date}T${startTime}:00`).toISOString()
+    ? localWallTimeToUtcIso(day.date, startTime, activityTimeZone)
     : null;
   const endDatetime = validTime(endTime)
-    ? new Date(`${day.date}T${endTime}:00`).toISOString()
+    ? localWallTimeToUtcIso(day.date, endTime, activityTimeZone)
     : null;
 
   if (
@@ -297,6 +369,8 @@ export async function PATCH(
       body.cost === "" || body.cost == null
         ? null
         : Number(body.cost),
+    timezone: activityTimeZone,
+    time_storage_version: 2,
   };
 
   if (coordinates) {
@@ -310,7 +384,7 @@ export async function PATCH(
     .eq("id", activityId)
     .eq("trip_id", tripId)
     .select(
-      "id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude",
+      "id,itinerary_day_id,title,activity_type,start_datetime,end_datetime,venue_name,address,notes,cost,currency,status,sort_order,latitude,longitude,timezone,time_storage_version",
     )
     .single();
 
