@@ -16,7 +16,7 @@ export function TripWorkspaceHeader({
 }: {
   trip: Trip;
   active:
-    | "overview" | "today" | "plan" | "bookings" | "travellers"
+    | "overview" | "itinerary" | "today" | "plan" | "bookings" | "travellers"
     | "explore" | "places" | "map" | "weather" | "chat"
     | "polls" | "photos" | "journal" | "checklists"
     | "documents" | "important" | "activity" | "budget" | "settlements" | "money" | "search" | "near-me" | "offline" | "assistant";
@@ -33,6 +33,7 @@ export function TripWorkspaceHeader({
           </div>
         </div>
         <div className="header-actions">
+          <Link className="itinerary-header-button" href={`/trips/${trip.id}/itinerary`}>✨ View Itinerary</Link>
           <Link className="assistant-button" href={`/trips/${trip.id}/assistant`}>✨ Ask Travel Crew</Link>
           <Link className="ghost" href={`/trips/${trip.id}/print`} target="_blank">Export Trip</Link>
           <TripBackupButton tripId={trip.id} />

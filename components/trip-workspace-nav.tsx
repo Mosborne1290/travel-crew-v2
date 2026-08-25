@@ -6,22 +6,23 @@ export function TripWorkspaceNav({
 }: {
   tripId: string;
   active:
-    | "overview" | "today" | "plan" | "bookings" | "travellers"
+    | "overview" | "itinerary" | "today" | "plan" | "bookings" | "travellers"
     | "explore" | "places" | "map" | "weather" | "chat"
     | "polls" | "photos" | "journal" | "checklists"
     | "documents" | "important" | "activity" | "budget" | "settlements" | "money" | "search" | "near-me" | "offline" | "assistant";
 }) {
   const tabs = [
     { id: "overview", label: "Overview", href: `/trips/${tripId}` },
-    { id: "search", label: "Search", href: `/trips/${tripId}/search` },
+    { id: "itinerary", label: "✨ Itinerary", href: `/trips/${tripId}/itinerary` },
     { id: "today", label: "Today", href: `/trips/${tripId}/today` },
     { id: "plan", label: "Plan", href: `/trips/${tripId}/plan` },
+    { id: "map", label: "Map", href: `/trips/${tripId}/map` },
+    { id: "search", label: "Search", href: `/trips/${tripId}/search` },
     { id: "bookings", label: "Bookings", href: `/trips/${tripId}/bookings` },
     { id: "travellers", label: "Travellers", href: `/trips/${tripId}/travellers` },
     { id: "explore", label: "Explore", href: `/trips/${tripId}/explore` },
     { id: "near-me", label: "Near Me", href: `/trips/${tripId}/near-me` },
     { id: "places", label: "Saved Places", href: `/trips/${tripId}/places` },
-    { id: "map", label: "Map", href: `/trips/${tripId}/map` },
     { id: "weather", label: "Weather", href: `/trips/${tripId}/weather` },
     { id: "chat", label: "Chat", href: `/trips/${tripId}/chat` },
     { id: "polls", label: "Polls", href: `/trips/${tripId}/polls` },
