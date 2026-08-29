@@ -40,6 +40,24 @@ export default async function DashboardPage(){
    {upcoming?<Link className="quick-card" href={`/trips/${upcoming.id}/chat`}><div className="quick-icon">💬</div><strong>Trip Chat</strong><small>Replies, reactions and updates</small></Link>:null}
    {upcoming?<Link className="quick-card" href={`/trips/${upcoming.id}/checklists`}><div className="quick-icon">✅</div><strong>Trip Prep</strong><small>Checklists, packing & reminders</small></Link>:null}
   </section>
-  <section className="two-col"><div className="panel"><h2>Trips</h2><div className="list">{allTrips.slice(0,5).map(t=><Link className="list-row" href={`/trips/${t.id}`} key={t.id}><div><strong>{t.name}</strong><div className="muted">{t.primary_destination||"Destination not set"}</div></div><span className="badge">{t.status}</span></Link>)}</div></div><div className="panel"><h2>Stage 6 Companion</h2><div className="list"><div className="list-row"><span>Notifications</span><strong>{unread??0} unread</strong></div><div className="list-row"><span>Browser alerts</span><strong>Available</strong></div><div className="list-row"><span>Offline trip copies</span><strong>Ready</strong></div></div></div></section>
+  <section className="two-col dashboard-lower-grid">
+   <div className="panel dashboard-trips-panel">
+    <div className="section-title-row"><div><h2>Trips</h2><div className="muted">Your current and upcoming adventures.</div></div><Link className="text-link" href="/trips">View all →</Link></div>
+    <div className="list dashboard-trip-list">
+     {allTrips.slice(0,5).map(t=><Link className="list-row dashboard-trip-row" href={`/trips/${t.id}`} key={t.id}>
+      <div className="dashboard-trip-copy"><strong>{t.name}</strong><div className="muted">{t.primary_destination||"Destination not set"}</div></div>
+      <span className="badge">{t.status}</span>
+     </Link>)}
+    </div>
+   </div>
+   <div className="panel trip-essentials-panel">
+    <div className="section-title-row"><div><h2>Trip Essentials</h2><div className="muted">Useful travel tools that stay ready in the background.</div></div></div>
+    <div className="list trip-essentials-list">
+     <div className="list-row"><span className="essential-label"><i>🔔</i> Notifications</span><strong>{unread??0} unread</strong></div>
+     <div className="list-row"><span className="essential-label"><i>🔔</i> Browser alerts</span><strong>Available</strong></div>
+     <div className="list-row"><span className="essential-label"><i>📱</i> Offline trip copies</span><strong>Ready</strong></div>
+    </div>
+   </div>
+  </section>
  </>;
 }

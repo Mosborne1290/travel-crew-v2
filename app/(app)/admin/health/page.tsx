@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";import { requireUser,getCurrentRole } from "@/lib/auth";import { createClient } from "@/lib/supabase/server";
 export default async function HealthPage(){const user=await requireUser();const role=await getCurrentRole(user.id);if(role!=="owner")redirect("/dashboard");const supabase=await createClient();const checks:any[]=[];
  const q=await supabase.from("trips").select("id",{head:true,count:"exact"});checks.push({name:"Supabase database connection",ok:!q.error,detail:q.error?.message||"Connected"});
- const p=await supabase.from("push_subscriptions").select("id",{head:true,count:"exact"});checks.push({name:"Stage 7/8 push table",ok:!p.error,detail:p.error?.message||"Available"});
- const d=await supabase.from("documents").select("alert_days",{head:true,count:"exact"});checks.push({name:"Stage 8 database migration",ok:!d.error,detail:d.error?.message||"Stage 8 fields available"});
+ const p=await supabase.from("push_subscriptions").select("id",{head:true,count:"exact"});checks.push({name:"Push notification service",ok:!p.error,detail:p.error?.message||"Available"});
+ const d=await supabase.from("documents").select("alert_days",{head:true,count:"exact"});checks.push({name:"Document alert fields",ok:!d.error,detail:d.error?.message||"Required fields available"});
  checks.push({name:"Supabase URL",ok:Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),detail:process.env.NEXT_PUBLIC_SUPABASE_URL?"Configured":"Missing"});
  checks.push({name:"Supabase public key",ok:Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),detail:process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?"Configured":"Missing"});
  checks.push({name:"Pexels images",ok:Boolean(process.env.PEXELS_API_KEY),detail:process.env.PEXELS_API_KEY?"Configured":"Optional key missing"});
