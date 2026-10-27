@@ -59,9 +59,6 @@ export function AppShell({
           <Link className="nav-link" href="/money">
             <span>💱</span> <span className="nav-text">Travel Money</span>
           </Link>
-          <Link className="nav-link" href="/near-me">
-            <span>📍</span> <span className="nav-text">Near Me</span>
-          </Link>
           <Link className="nav-link" href="/settings">
             <span>⚙</span> <span className="nav-text">Settings</span>
           </Link>
@@ -95,7 +92,7 @@ export function AppShell({
         </div>
         {children}
       </main>
-          <MobileNav />
+      <MobileNav />
     </div>
   );
 }
