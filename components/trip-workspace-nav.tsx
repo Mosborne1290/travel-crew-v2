@@ -25,7 +25,6 @@ export function TripWorkspaceNav({ tripId, active }: { tripId: string; active: A
     ]},
     { title: "Explore", items: [
       { id: "explore", label: "Explore", icon: "🧭", href: `/trips/${tripId}/explore` },
-      { id: "near-me", label: "Near Me", icon: "📍", href: `/trips/${tripId}/near-me` },
       { id: "places", label: "Saved Places", icon: "⭐", href: `/trips/${tripId}/places` },
       { id: "weather", label: "Weather", icon: "🌤️", href: `/trips/${tripId}/weather` },
     ]},
